@@ -1,0 +1,11 @@
+10
+101 Sobre_Dragones_Ancestrales Sobre 18000 40 0 12 15 9 14
+102 Caja_Dragones_Ancestrales Caja 520000 3 1 1 0 2 1
+103 Mazo_Inicial_Fuego Mazo 65000 10 0 3 2 4 1
+104 Mazo_Inicial_Agua Mazo 65000 2 0 2 3 1 2
+105 Carta_Fenix_Dorado Carta 250000 1 0 0 1 0 0
+106 Carta_Golem_Cristal Carta 12000 6 1 2 1 3 2
+107 Carta_Lobo_Sombra Carta 8000 15 0 4 5 3 6
+108 Carta_Sirena_Holo Carta 35000 5 0 1 2 2 1
+109 Fundas_x100 Accesorio 22000 25 0 8 6 10 7
+110 Carpeta_9_Bolsillos Accesorio 45000 2 1 1 2 0 1
