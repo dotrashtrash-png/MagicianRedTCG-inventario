@@ -83,7 +83,8 @@ int main() {
     int n, opcion = -1, opcionReporte, pos, sem;
 
     srand(time(0));
-if (!iniciarSesion()) {
+
+    if (!iniciarSesion()) {
         cout << "Acceso bloqueado." << endl;
         return 0;
     }
@@ -206,13 +207,17 @@ if (!iniciarSesion()) {
 // ===== ZONA MILLER ===================================================
 // =====================================================================
 
-// Pide usuario y contrasena; maximo 3 intentos. Retorna true si entra.
-bool iniciarSesion() {  
-    string usuario, clave;
+// Pide usuario y contrasena; da maximo 3 intentos.
+// No recibe parametros.
+// Retorna: true si el usuario entro, false si se acabaron los intentos.
+bool iniciarSesion() {
+    string usuario;
+    string clave;
     const string USER_CORRECTO = "admin";
     const string PASS_CORRECTA = "tcg2026";
+    int intento;
 
-    for (int intento = 1; intento <= 3; intento++) {
+    for (intento = 1; intento <= 3; intento++) {
         cout << "\n=== INICIO DE SESION (Intento " << intento << " de 3) ===" << endl;
         cout << "Usuario: ";
         cin >> usuario;
@@ -231,76 +236,94 @@ bool iniciarSesion() {
     return false;
 }
 
-// Pide un entero entre minimo y maximo y repite hasta que sea valido.
+// Pide un numero entero y repite la pregunta hasta que sea valido.
+// Recibe: el mensaje a mostrar y el rango permitido (minimo y maximo).
+// Retorna: el numero que escribio el usuario, ya validado.
 int leerEntero(string mensaje, int minimo, int maximo) {
     int valor;
+
     cout << mensaje;
-    cin >> valor;   
-        while (cin.fail()||valor < minimo || valor > maximo) {
-            cin.clear();
-            cin.ignore(1000, '\n');  // limpia el buffer de entrada
-            cout << "Error. Ingrese un numero entre " << minimo << " y " << maximo << ": ";
-            cin >> valor;
-        }
-        cin.ignore(1000, '\n');  // limpia el buffer de entrada
+    cin >> valor;
+    // cin.fail() es verdadero si escribieron letras en vez de un numero
+    while (cin.fail() || valor < minimo || valor > maximo) {
+        cin.clear();             // quita el estado de error de cin
+        cin.ignore(1000, '\n');  // descarta lo que quedo escrito
+        cout << "Error. Ingrese un numero entre " << minimo << " y " << maximo << ": ";
+        cin >> valor;
+    }
+    cin.ignore(1000, '\n');      // limpia el Enter que quedo pendiente
     return valor;
 }
 
-// Lee inventario.txt y llena arreglos y matriz. Retorna cuantos productos leyo.
+// Lee inventario.txt y llena los arreglos y la matriz de ventas.
+// Recibe: los arreglos de productos y la matriz de ventas (aqui se llenan).
+// Retorna: cuantos productos leyo (0 si el archivo no existe).
 int cargarInventario(int codigo[], string nombre[], string categoria[], double precio[],
                      int stock[], bool promo[], int ventas[][SEMANAS]) {
     ifstream archivo(ARCHIVO);
+    int n;
+    int i;
+    int j;
+
     if (!archivo.is_open()) {
-        cout << "No se encontro inventario.txt. Se empieza con el inventario vacio.\n";
+        cout << "No se encontro inventario.txt. Se empieza con el inventario vacio." << endl;
         return 0;
     }
-    int n = 0;
-    archivo >> n;
 
-    for(int i = 0; i < n; i++){
+    n = 0;
+    archivo >> n;
+    if (n > MAX) {      // no se pueden cargar mas productos de los que caben
+        n = MAX;
+    }
+
+    for (i = 0; i < n; i++) {
         archivo >> codigo[i] >> nombre[i] >> categoria[i] >> precio[i] >> stock[i] >> promo[i];
-        for (int j = 0; j < SEMANAS; j++) {
+        for (j = 0; j < SEMANAS; j++) {
             archivo >> ventas[i][j];
         }
     }
+
     archivo.close();
     return n;
 }
 
-// Escribe arreglos y matriz en inventario.txt.
+// Escribe todos los productos y sus ventas en inventario.txt (reemplaza el archivo).
+// Recibe: los arreglos de productos, la matriz de ventas y la cantidad n.
+// No retorna nada (void).
 void guardarInventario(int codigo[], string nombre[], string categoria[], double precio[],
                        int stock[], bool promo[], int ventas[][SEMANAS], int n) {
-            ofstream archivo(ARCHIVO);
-            if (!archivo.is_open()){
-                cout << "ERROR: no se pudo abrir " << ARCHIVO << " para guardar. \n";
-                return;
-            }
-            archivo << n << "\n";
-            archivo << fixed << setprecision(0);
+    ofstream archivo(ARCHIVO);
+    int i;
+    int j;
 
-            for(int i= 0; i < n; i++){
-                archivo << codigo[i] << " "
-                        << nombre[i] <<  " "
-                        << categoria[i] << " "
-                        << precio [i] << " "
-                        << stock [i] << " "
-                        << promo [i];
-            
-            for (int j = 0; j < SEMANAS; j++) {
+    if (!archivo.is_open()) {
+        cout << "ERROR: no se pudo abrir " << ARCHIVO << " para guardar." << endl;
+        return;
+    }
+
+    archivo << n << "\n";
+    archivo << fixed << setprecision(0);   // precios enteros, sin notacion 1.25e+06
+
+    for (i = 0; i < n; i++) {
+        archivo << codigo[i] << " " << nombre[i] << " " << categoria[i] << " "
+                << precio[i] << " " << stock[i] << " " << promo[i];
+        for (j = 0; j < SEMANAS; j++) {
             archivo << " " << ventas[i][j];
         }
-    
         archivo << "\n";
+    }
 
-    archivo.close();
-    }                      
+    archivo.close();    // se cierra una sola vez, despues de escribir todos
 }
 
-// Agrega una linea al final de historial_ventas.txt.
+// Agrega una linea al final de historial_ventas.txt sin borrar lo anterior.
+// Recibe: el texto que se va a guardar.
+// No retorna nada (void).
 void guardarHistorial(string detalle) {
-    ofstream archivo(HISTORIAL, ios::app);
+    ofstream archivo(HISTORIAL, ios::app);   // ios::app = agregar al final
+
     if (!archivo.is_open()) {
-        cout << "ERROR: no se pudo abrir " << HISTORIAL << ".\n";
+        cout << "ERROR: no se pudo abrir " << HISTORIAL << "." << endl;
         return;
     }
 
@@ -308,57 +331,74 @@ void guardarHistorial(string detalle) {
     archivo.close();
 }
 
-
-// Vende un sobre sorpresa: 3 cartas al azar con stock.
+// Vende un sobre sorpresa: escoge al azar 3 cartas distintas con stock,
+// les descuenta 1 unidad y suma la venta en la semana que diga el usuario.
+// Recibe: nombres, categorias, stock, matriz de ventas y cantidad de productos.
+// No retorna nada (void).
 void sobreSorpresa(string nombre[], string categoria[], int stock[],
                    int ventas[][SEMANAS], int n) {
-        int disponibles = 0;
-    for (int i = 0; i < n; i++) {
-        if (stock[i] > 0) {
+    int disponibles;
+    int semana;
+    int elegidos[3];
+    int encontrados;
+    int idx;
+    int pos;
+    int i;
+    int k;
+    bool repetido;
+    double ivaSobre;
+    double totalSobre;
+    string resumenCartas;
+
+    // Contar cuantas cartas distintas tienen stock
+    disponibles = 0;
+    for (i = 0; i < n; i++) {
+        if (categoria[i] == "Carta" && stock[i] > 0) {
             disponibles++;
         }
     }
 
     if (disponibles < 3) {
-        cout << "No hay suficientes productos con stock disponible (se requieren al menos 3).\n";
+        cout << "No hay suficientes cartas con stock para armar un sobre (se necesitan 3)." << endl;
         return;
     }
 
-    int semana = leerEntero("Ingrese la semana de la venta (1 a 4): ", 1, SEMANAS);
-    int elegidos[3] = {-1, -1, -1};
-    int encontrados = 0;
+    semana = leerEntero("Ingrese la semana de la venta (1 a " + to_string(SEMANAS) + "): ",
+                        1, SEMANAS);
 
+    // Sacar posiciones al azar hasta tener 3 cartas distintas con stock.
+    // El ciclo siempre termina porque arriba se verifico que hay al menos 3.
+    encontrados = 0;
     while (encontrados < 3) {
-        int idx = rand() % n;
-        bool repetido = false;
-
-        for (int k = 0; k < encontrados; k++) {
+        idx = rand() % n;               // posicion al azar entre 0 y n-1
+        repetido = false;
+        for (k = 0; k < encontrados; k++) {
             if (elegidos[k] == idx) {
                 repetido = true;
             }
         }
-
-        if (!repetido && stock[idx] > 0) {
+        if (!repetido && categoria[idx] == "Carta" && stock[idx] > 0) {
             elegidos[encontrados] = idx;
             encontrados++;
         }
     }
 
-    double ivaSobre = PRECIO_SOBRE * IVA;
-    double totalSobre = PRECIO_SOBRE + ivaSobre;
+    ivaSobre = PRECIO_SOBRE * IVA;
+    totalSobre = PRECIO_SOBRE + ivaSobre;
 
     cout << "\n=== FACTURA SOBRE SORPRESA ===" << endl;
     cout << "Cartas obtenidas:" << endl;
 
-    string resumenCartas = "";
-    for (int k = 0; k < 3; k++) {
-        int pos = elegidos[k];
+    resumenCartas = "";
+    for (k = 0; k < 3; k++) {
+        pos = elegidos[k];
         stock[pos]--;
         ventas[pos][semana - 1]++;
-        cout << "  " << (k + 1) << ". " << nombre[pos] << " [" << categoria[pos] << "]" << endl;
-
+        cout << "  " << (k + 1) << ". " << nombre[pos] << endl;
         resumenCartas += nombre[pos];
-        if (k < 2) resumenCartas += ", ";
+        if (k < 2) {
+            resumenCartas += ", ";
+        }
     }
 
     cout << fixed << setprecision(0);
@@ -369,7 +409,6 @@ void sobreSorpresa(string nombre[], string categoria[], int stock[],
     guardarHistorial("Sobre Sorpresa (Semana " + to_string(semana) + "): " +
                      resumenCartas + " | Total: $" + to_string((int)totalSobre));
 }
-
 
 // =====================================================================
 // ===== ZONA CADAVID ==================================================
