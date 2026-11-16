@@ -173,41 +173,183 @@ void venderProducto(int codigo[], string nombre[], double precio[], int stock[],
 // ===== ZONA MIGUEL ===================================================
 // =====================================================================
 
-// Muestra la matriz de ventas con totales por producto y por semana.
+// Muestra la matriz de ventas: una fila por producto, una columna por
+// semana, el total de cada producto al final de su fila y el total de
+// cada semana en la ultima fila.
+// Recibe: codigos, nombres, matriz de ventas y cantidad de productos.
+// No retorna nada (void).
 void mostrarVentas(int codigo[], string nombre[], int ventas[][SEMANAS], int n) {
-    // PENDIENTE
+    int i;
+    int j;
+    int totalSemana;
+    int totalGeneral;
+
+    if (n == 0) {
+        cout << "No hay productos registrados." << endl;
+    } else {
+        cout << endl << "=== VENTAS DEL MES (unidades) ===" << endl;
+
+        // Encabezado: Codigo, Producto, S1, S2, ... y Total
+        cout << left << setw(8) << "Codigo" << setw(30) << "Producto";
+        for (j = 0; j < SEMANAS; j++) {
+            cout << "   S" << j + 1;
+        }
+        cout << right << setw(8) << "Total" << endl;
+
+        // Una fila por producto: el for de afuera recorre productos (filas)
+        // y el de adentro recorre las semanas (columnas) de ese producto.
+        for (i = 0; i < n; i++) {
+            cout << left << setw(8) << codigo[i] << setw(30) << nombre[i];
+            for (j = 0; j < SEMANAS; j++) {
+                cout << right << setw(5) << ventas[i][j];
+            }
+            cout << right << setw(8) << totalVendido(ventas, i) << endl;
+        }
+
+        // Ultima fila: total de cada semana. Aqui se invierte el orden:
+        // el for de afuera recorre semanas y el de adentro suma los productos.
+        totalGeneral = 0;
+        cout << left << setw(38) << "Total por semana";
+        for (j = 0; j < SEMANAS; j++) {
+            totalSemana = 0;
+            for (i = 0; i < n; i++) {
+                totalSemana = totalSemana + ventas[i][j];
+            }
+            totalGeneral = totalGeneral + totalSemana;
+            cout << right << setw(5) << totalSemana;
+        }
+        cout << right << setw(8) << totalGeneral << endl;
+    }
 }
 
-// Retorna cuantas unidades vendio el producto de esa fila en el mes.
+// Suma las unidades que vendio un producto en todas las semanas del mes.
+// Recibe: la matriz de ventas y la fila (posicion) del producto.
+// Retorna: el total de unidades vendidas de ese producto (int).
 int totalVendido(int ventas[][SEMANAS], int fila) {
-    // PENDIENTE
-    return 0;
+    int j;
+    int suma;
+
+    suma = 0;
+    for (j = 0; j < SEMANAS; j++) {
+        suma = suma + ventas[fila][j];
+    }
+    return suma;
 }
 
-// Retorna los ingresos del mes: precio x unidades vendidas de cada producto.
+// Calcula los ingresos del mes a precio de lista:
+// precio de cada producto x unidades que vendio en el mes.
+// Recibe: precios, matriz de ventas y cantidad de productos.
+// Retorna: el total de ingresos en pesos (double).
 double calcularIngresos(double precio[], int ventas[][SEMANAS], int n) {
-    // PENDIENTE
-    return 0;
+    int i;
+    double total;
+
+    total = 0;
+    for (i = 0; i < n; i++) {
+        total = total + precio[i] * totalVendido(ventas, i);
+    }
+    return total;
 }
 
-// Retorna la posicion del producto con mas unidades vendidas.
+// Busca el producto que mas unidades vendio en el mes.
+// Recibe: matriz de ventas y cantidad de productos.
+// Retorna: la posicion de ese producto, o -1 si no hay productos.
 int productoMasVendido(int ventas[][SEMANAS], int n) {
-    // PENDIENTE
-    return 0;
+    int i;
+    int posMayor;
+
+    if (n == 0) {
+        posMayor = -1;
+    } else {
+        posMayor = 0;   // suponemos que el primero es el mayor...
+        for (i = 0; i < n; i++) {
+            // ...y si encontramos uno que vendio mas, ese pasa a ser el mayor
+            if (totalVendido(ventas, i) > totalVendido(ventas, posMayor)) {
+                posMayor = i;
+            }
+        }
+    }
+    return posMayor;
 }
 
-// Retorna el numero de columna (semana) con mas unidades vendidas.
+// Busca la semana del mes en la que se vendieron mas unidades en total.
+// Recorre la matriz por columnas: para cada semana suma todos los productos.
+// Recibe: matriz de ventas y cantidad de productos.
+// Retorna: el numero de columna de esa semana (0 = semana 1), o -1 si no hay productos.
 int semanaConMasVentas(int ventas[][SEMANAS], int n) {
-    // PENDIENTE
-    return 0;
+    int i;
+    int j;
+    int sumaSemana;
+    int mayor;
+    int semanaMayor;
+
+    if (n == 0) {
+        semanaMayor = -1;
+    } else {
+        mayor = -1;
+        semanaMayor = 0;
+        for (j = 0; j < SEMANAS; j++) {          // afuera: cada semana (columna)
+            sumaSemana = 0;
+            for (i = 0; i < n; i++) {            // adentro: cada producto (fila)
+                sumaSemana = sumaSemana + ventas[i][j];
+            }
+            if (sumaSemana > mayor) {
+                mayor = sumaSemana;
+                semanaMayor = j;
+            }
+        }
+    }
+    return semanaMayor;
 }
 
-// Muestra los productos con stock menor o igual a STOCK_MIN.
+// Muestra los productos que hay que volver a pedir (stock <= STOCK_MIN).
+// Recibe: codigos, nombres, stock y cantidad de productos.
+// No retorna nada (void).
 void reporteStockBajo(int codigo[], string nombre[], int stock[], int n) {
-    // PENDIENTE
+    int i;
+    int contador;
+
+    contador = 0;
+    cout << endl << "=== PRODUCTOS CON STOCK BAJO (" << STOCK_MIN << " o menos) ===" << endl;
+    for (i = 0; i < n; i++) {
+        if (stock[i] <= STOCK_MIN) {
+            cout << left << setw(8) << codigo[i] << setw(30) << nombre[i]
+                 << "quedan " << stock[i] << endl;
+            contador = contador + 1;
+        }
+    }
+
+    if (contador == 0) {
+        if (n == 0) {
+            cout << "No hay productos registrados." << endl;
+        } else {
+            cout << "Todos los productos tienen stock suficiente." << endl;
+        }
+    } else {
+        cout << contador << " producto(s) por reabastecer." << endl;
+    }
 }
 
-// Dibuja una barra de * por producto segun lo que vendio en el mes.
+// Dibuja un grafico de barras: una fila de * por producto,
+// un asterisco por cada unidad vendida en el mes.
+// Recibe: nombres, matriz de ventas y cantidad de productos.
+// No retorna nada (void).
 void graficoVentas(string nombre[], int ventas[][SEMANAS], int n) {
-    // PENDIENTE
+    int i;
+    int k;
+    int total;
+
+    if (n == 0) {
+        cout << "No hay productos registrados." << endl;
+    } else {
+        cout << endl << "=== GRAFICO DE VENTAS DEL MES (* = 1 unidad) ===" << endl;
+        for (i = 0; i < n; i++) {
+            total = totalVendido(ventas, i);
+            cout << left << setw(30) << nombre[i] << "| ";
+            for (k = 0; k < total; k++) {        // tantos * como unidades vendidas
+                cout << "*";
+            }
+            cout << " " << total << endl;
+        }
+    }
 }
