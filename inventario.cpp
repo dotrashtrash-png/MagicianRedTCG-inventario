@@ -97,21 +97,44 @@ int main() {
 
 // Pide usuario y contrasena; maximo 3 intentos. Retorna true si entra.
 bool iniciarSesion() {
-    // PENDIENTE
+  
     return true;
 }
 
 // Pide un entero entre minimo y maximo y repite hasta que sea valido.
 int leerEntero(string mensaje, int minimo, int maximo) {
-    // PENDIENTE
+    int valor;
+    cout << mensaje;
+    cin >> valor;   
+        while (valor < minimo || valor > maximo) {
+            cin.clear();
+            cin.ignore(1000, '\n');  // limpia el buffer de entrada
+            cout << "Error. Ingrese un numero entre " << minimo << " y " << maximo << ": ";
+            cin >> valor;
+        }
+        cin.ignore(1000, '\n');  // limpia el buffer de entrada
     return minimo;
 }
 
 // Lee inventario.txt y llena arreglos y matriz. Retorna cuantos productos leyo.
 int cargarInventario(int codigo[], string nombre[], string categoria[], double precio[],
                      int stock[], bool promo[], int ventas[][SEMANAS]) {
-    // PENDIENTE
-    return 0;
+    ifstream archivo(ARCHIVO);
+    if (!archivo.is_open()) {
+        cout << "No se encontro inventario.txt. Se empieza con el inventario vacio.\n";
+        return 0;
+    }
+    int n = 0;
+    archivo >> n;
+
+    for(int i = 0; i < n; i++){
+        archivo >> codigo[i] >> nombre[i] >> categoria[i] >> precio[i] >> stock[i] >> promo[i];
+        for (int j = 0; j < SEMANAS; j++) {
+            archivo >> ventas[i][j];
+        }
+    }
+    archivo.close();
+    return n;
 }
 
 // Escribe arreglos y matriz en inventario.txt.
