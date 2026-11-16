@@ -80,25 +80,155 @@ int main() {
     int stock[MAX];
     bool promo[MAX];
     int ventas[MAX][SEMANAS];
-    int n;
+    int n, opcion = -1, opcionReporte, pos, sem;
 
     srand(time(0));
+if (!iniciarSesion()) {
+        cout << "Acceso bloqueado." << endl;
+        return 0;
+    }
 
-    // PENDIENTE (Miller): login, menu con while + switch y submenu de reportes
     n = cargarInventario(codigo, nombre, categoria, precio, stock, promo, ventas);
-    cout << "Esqueleto de MagicianRed TCG compilando. Productos cargados: " << n << endl;
+    cout << "Productos cargados: " << n << endl;
+
+    while (opcion != 0) {
+        cout << "\n=== MAGICIANRED TCG ===" << endl;
+        cout << "1. Registrar producto" << endl;
+        cout << "2. Ver inventario" << endl;
+        cout << "3. Buscar producto" << endl;
+        cout << "4. Actualizar producto" << endl;
+        cout << "5. Eliminar producto" << endl;
+        cout << "6. Registrar venta" << endl;
+        cout << "7. Sobre sorpresa" << endl;
+        cout << "8. Reportes" << endl;
+        cout << "0. Salir" << endl;
+
+        opcion = leerEntero("Opcion: ", 0, 8);
+
+        switch (opcion) {
+            case 1:
+                registrarProducto(codigo, nombre, categoria, precio, stock, promo, ventas, n);
+                guardarInventario(codigo, nombre, categoria, precio, stock, promo, ventas, n);
+                break;
+
+            case 2:
+                listarProductos(codigo, nombre, categoria, precio, stock, promo, n);
+                break;
+
+            case 3:
+                verProducto(codigo, nombre, categoria, precio, stock, promo, ventas, n);
+                break;
+
+            case 4:
+                actualizarProducto(codigo, nombre, categoria, precio, stock, promo, ventas, n);
+                guardarInventario(codigo, nombre, categoria, precio, stock, promo, ventas, n);
+                break;
+
+            case 5:
+                eliminarProducto(codigo, nombre, categoria, precio, stock, promo, ventas, n);
+                guardarInventario(codigo, nombre, categoria, precio, stock, promo, ventas, n);
+                break;
+
+            case 6:
+                venderProducto(codigo, nombre, precio, stock, promo, ventas, n);
+                guardarInventario(codigo, nombre, categoria, precio, stock, promo, ventas, n);
+                break;
+
+            case 7:
+                sobreSorpresa(nombre, categoria, stock, ventas, n);
+                guardarInventario(codigo, nombre, categoria, precio, stock, promo, ventas, n);
+                break;
+
+            case 8:
+                cout << "\n--- REPORTES ---" << endl;
+                cout << "1. Mostrar ventas" << endl;
+                cout << "2. Calcular ingresos del mes" << endl;
+                cout << "3. Producto mas vendido" << endl;
+                cout << "4. Semana con mas ventas" << endl;
+                cout << "5. Reporte de stock bajo" << endl;
+                cout << "6. Grafico de ventas" << endl;
+
+                opcionReporte = leerEntero("Opcion de reporte: ", 1, 6);
+
+                switch (opcionReporte) {
+                    case 1:
+                        mostrarVentas(codigo, nombre, ventas, n);
+                        break;
+                    case 2:
+                        cout << fixed << setprecision(2) << "Ingresos del mes: $"
+                             << calcularIngresos(precio, ventas, n) << endl;
+                        break;
+                    case 3:
+                        pos = productoMasVendido(ventas, n);
+                        if (pos == -1) {
+                            cout << "No hay productos." << endl;
+                        } else {
+                            cout << "Mas vendido: " << nombre[pos] << " ("
+                                 << totalVendido(ventas, pos) << " unidades)" << endl;
+                        }
+                        break;
+                    case 4:
+                        sem = semanaConMasVentas(ventas, n);
+                        if (sem == -1) {
+                            cout << "No hay productos." << endl;
+                        } else {
+                            cout << "Semana con mas ventas: " << sem + 1 << endl;
+                        }
+                        break;
+                    case 5:
+                        reporteStockBajo(codigo, nombre, stock, n);
+                        break;
+                    case 6:
+                        graficoVentas(nombre, ventas, n);
+                        break;
+                    default:
+                        cout << "Opcion invalida." << endl;
+                        break;
+                }
+                break;
+
+            case 0:
+                guardarInventario(codigo, nombre, categoria, precio, stock, promo, ventas, n);
+                cout << "Hasta luego." << endl;
+                break;
+
+            default:
+                cout << "Opcion invalida." << endl;
+                break;
+        }
+    }
 
     return 0;
 }
+
 
 // =====================================================================
 // ===== ZONA MILLER ===================================================
 // =====================================================================
 
 // Pide usuario y contrasena; maximo 3 intentos. Retorna true si entra.
-bool iniciarSesion() {
-  
-    return true;
+bool iniciarSesion() {  
+    string usuario, clave;
+    const string USER_CORRECTO = "admin";
+    const string PASS_CORRECTA = "tcg2026";
+
+    for (int intento = 1; intento <= 3; intento++) {
+        cout << "\n=== INICIO DE SESION (Intento " << intento << " de 3) ===" << endl;
+        cout << "Usuario: ";
+        cin >> usuario;
+        cout << "Contrasena: ";
+        cin >> clave;
+        cin.ignore(1000, '\n');
+
+        if (usuario == USER_CORRECTO && clave == PASS_CORRECTA) {
+            cout << "Bienvenido al sistema MagicianRed TCG." << endl;
+            return true;
+        } else {
+            cout << "Usuario o contrasena incorrectos." << endl;
+        }
+    }
+
+    return false;
 }
 
 // Pide un entero entre minimo y maximo y repite hasta que sea valido.
@@ -106,14 +236,14 @@ int leerEntero(string mensaje, int minimo, int maximo) {
     int valor;
     cout << mensaje;
     cin >> valor;   
-        while (valor < minimo || valor > maximo) {
+        while (cin.fail()||valor < minimo || valor > maximo) {
             cin.clear();
             cin.ignore(1000, '\n');  // limpia el buffer de entrada
             cout << "Error. Ingrese un numero entre " << minimo << " y " << maximo << ": ";
             cin >> valor;
         }
         cin.ignore(1000, '\n');  // limpia el buffer de entrada
-    return minimo;
+    return valor;
 }
 
 // Lee inventario.txt y llena arreglos y matriz. Retorna cuantos productos leyo.
@@ -159,23 +289,87 @@ void guardarInventario(int codigo[], string nombre[], string categoria[], double
             for (int j = 0; j < SEMANAS; j++) {
             archivo << " " << ventas[i][j];
         }
-    }
+    
         archivo << "\n";
 
     archivo.close();
-                        
+    }                      
 }
 
 // Agrega una linea al final de historial_ventas.txt.
 void guardarHistorial(string detalle) {
-    // PENDIENTE
+    ofstream archivo(HISTORIAL, ios::app);
+    if (!archivo.is_open()) {
+        cout << "ERROR: no se pudo abrir " << HISTORIAL << ".\n";
+        return;
+    }
+
+    archivo << detalle << "\n";
+    archivo.close();
 }
+
 
 // Vende un sobre sorpresa: 3 cartas al azar con stock.
 void sobreSorpresa(string nombre[], string categoria[], int stock[],
                    int ventas[][SEMANAS], int n) {
-    // PENDIENTE
+        int disponibles = 0;
+    for (int i = 0; i < n; i++) {
+        if (stock[i] > 0) {
+            disponibles++;
+        }
+    }
+
+    if (disponibles < 3) {
+        cout << "No hay suficientes productos con stock disponible (se requieren al menos 3).\n";
+        return;
+    }
+
+    int semana = leerEntero("Ingrese la semana de la venta (1 a 4): ", 1, SEMANAS);
+    int elegidos[3] = {-1, -1, -1};
+    int encontrados = 0;
+
+    while (encontrados < 3) {
+        int idx = rand() % n;
+        bool repetido = false;
+
+        for (int k = 0; k < encontrados; k++) {
+            if (elegidos[k] == idx) {
+                repetido = true;
+            }
+        }
+
+        if (!repetido && stock[idx] > 0) {
+            elegidos[encontrados] = idx;
+            encontrados++;
+        }
+    }
+
+    double ivaSobre = PRECIO_SOBRE * IVA;
+    double totalSobre = PRECIO_SOBRE + ivaSobre;
+
+    cout << "\n=== FACTURA SOBRE SORPRESA ===" << endl;
+    cout << "Cartas obtenidas:" << endl;
+
+    string resumenCartas = "";
+    for (int k = 0; k < 3; k++) {
+        int pos = elegidos[k];
+        stock[pos]--;
+        ventas[pos][semana - 1]++;
+        cout << "  " << (k + 1) << ". " << nombre[pos] << " [" << categoria[pos] << "]" << endl;
+
+        resumenCartas += nombre[pos];
+        if (k < 2) resumenCartas += ", ";
+    }
+
+    cout << fixed << setprecision(0);
+    cout << "Subtotal: $" << PRECIO_SOBRE << endl;
+    cout << "IVA (19%): $" << ivaSobre << endl;
+    cout << "Total a pagar: $" << totalSobre << endl;
+
+    guardarHistorial("Sobre Sorpresa (Semana " + to_string(semana) + "): " +
+                     resumenCartas + " | Total: $" + to_string((int)totalSobre));
 }
+
 
 // =====================================================================
 // ===== ZONA CADAVID ==================================================
