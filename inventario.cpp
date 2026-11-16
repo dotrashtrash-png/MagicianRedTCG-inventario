@@ -140,7 +140,30 @@ int cargarInventario(int codigo[], string nombre[], string categoria[], double p
 // Escribe arreglos y matriz en inventario.txt.
 void guardarInventario(int codigo[], string nombre[], string categoria[], double precio[],
                        int stock[], bool promo[], int ventas[][SEMANAS], int n) {
-    // PENDIENTE
+            ofstream archivo(ARCHIVO);
+            if (!archivo.is_open()){
+                cout << "ERROR: no se pudo abrir " << ARCHIVO << " para guardar. \n";
+                return;
+            }
+            archivo << n << "\n";
+            archivo << fixed << setprecision(0);
+
+            for(int i= 0; i < n; i++){
+                archivo << codigo[i] << " "
+                        << nombre[i] <<  " "
+                        << categoria[i] << " "
+                        << precio [i] << " "
+                        << stock [i] << " "
+                        << promo [i];
+            
+            for (int j = 0; j < SEMANAS; j++) {
+            archivo << " " << ventas[i][j];
+        }
+    }
+        archivo << "\n";
+
+    archivo.close();
+                        
 }
 
 // Agrega una linea al final de historial_ventas.txt.
