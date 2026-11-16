@@ -51,8 +51,10 @@ void registrarProducto(int codigo[], string nombre[], string categoria[], double
                        int stock[], bool promo[], int ventas[][SEMANAS], int &n);
 void listarProductos(int codigo[], string nombre[], string categoria[], double precio[],
                      int stock[], bool promo[], int n);
+void verProducto(int codigo[], string nombre[], string categoria[], double precio[],
+                 int stock[], bool promo[], int ventas[][SEMANAS], int n);
 void actualizarProducto(int codigo[], string nombre[], string categoria[], double precio[],
-                        int stock[], bool promo[], int n);
+                        int stock[], bool promo[], int ventas[][SEMANAS], int n);
 void eliminarProducto(int codigo[], string nombre[], string categoria[], double precio[],
                       int stock[], bool promo[], int ventas[][SEMANAS], int &n);
 void venderProducto(int codigo[], string nombre[], double precio[], int stock[],
@@ -151,9 +153,15 @@ void listarProductos(int codigo[], string nombre[], string categoria[], double p
     // PENDIENTE
 }
 
-// Cambia los datos de un producto existente.
+// Pide un codigo y muestra todos los datos del producto y sus ventas por semana.
+void verProducto(int codigo[], string nombre[], string categoria[], double precio[],
+                 int stock[], bool promo[], int ventas[][SEMANAS], int n) {
+    // PENDIENTE
+}
+
+// Cambia los datos de un producto existente (incluida su fila de ventas).
 void actualizarProducto(int codigo[], string nombre[], string categoria[], double precio[],
-                        int stock[], bool promo[], int n) {
+                        int stock[], bool promo[], int ventas[][SEMANAS], int n) {
     // PENDIENTE
 }
 
