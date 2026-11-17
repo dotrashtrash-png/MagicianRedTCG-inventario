@@ -1,9 +1,160 @@
-# MagicianRed TCG - Inventario y ventas
+<div align="center">
 
-Proyecto final de Fundamentos de Programación (USB Cali, 2026-2).
+# 🃏 MagicianRed TCG
 
-Integrantes: Miguel Ángel Cano, Juan Sebastián Cadavid, Juan Guillermo Miller Domínguez
+### Sistema de inventario y ventas para una tienda de cartas coleccionables
 
-Programa de consola en C++ para manejar el inventario y las ventas de una tienda de artículos coleccionables. Los datos se guardan en `inventario.txt`.
+![C++](https://img.shields.io/badge/C%2B%2B-consola-00599C?style=for-the-badge&logo=cplusplus&logoColor=white)
+![Estado](https://img.shields.io/badge/estado-terminado-8B0000?style=for-the-badge)
+![USB Cali](https://img.shields.io/badge/USB%20Cali-2026--2-1a1a1a?style=for-the-badge)
 
-Para compilar: `g++ inventario.cpp -o magicianred`
+*Proyecto final · Fundamentos de Programación · Universidad de San Buenaventura Cali*
+
+</div>
+
+---
+
+## ✨ Qué hace
+
+**MagicianRed TCG S.A.S.** es una tienda (ficticia) de Cali que vende sobres, cajas, mazos, cartas sueltas y accesorios. Antes llevaba todo en un cuaderno; este programa lo reemplaza.
+
+| | Función | Detalle |
+| :-: | --- | --- |
+| 🔐 | **Inicio de sesión** | Usuario y contraseña, máximo 3 intentos |
+| 📦 | **Inventario** | Registrar, ver, buscar, actualizar y eliminar productos |
+| 🧾 | **Ventas con factura** | Descuento del 10 % si hay promoción e IVA del 19 % |
+| 🎴 | **Sobre sorpresa** | 3 cartas al azar del inventario por $30.000 + IVA |
+| 📊 | **Reportes** | Ventas por semana, ingresos del mes, producto más vendido, mejor semana, stock bajo y gráfico |
+| 💾 | **Guardado automático** | Todo queda en `inventario.txt`, aunque cierres el programa |
+
+## 👀 Así se ve
+
+```
+=== MAGICIANRED TCG ===
+1. Registrar producto
+2. Ver inventario
+3. Buscar producto
+4. Actualizar producto
+5. Eliminar producto
+6. Registrar venta
+7. Sobre sorpresa
+8. Reportes
+0. Salir
+Opcion:
+```
+
+```
+=== GRAFICO DE VENTAS DEL MES (* = 1 unidad) ===
+Sobre_Dragones_Ancestrales    | ************************************************** 50
+Caja_Dragones_Ancestrales     | **** 4
+Mazo_Inicial_Fuego            | ********** 10
+Carta_Lobo_Sombra             | ****************** 18
+Fundas_x100                   | ******************************* 31
+```
+
+---
+
+## ▶️ Cómo ejecutarlo
+
+No necesitas saber programar ni usar GitHub. Escoge **una** de las dos opciones.
+
+### Opción A · Sin instalar nada (en el navegador) 🌐
+
+La más fácil. Funciona en cualquier computador.
+
+1. En esta página, abre el archivo **`inventario.cpp`**, haz clic en el ícono de **copiar** (arriba a la derecha del código) y déjalo copiado.
+2. Entra a **[onlinegdb.com](https://www.onlinegdb.com/online_c++_compiler)**.
+3. Borra lo que trae el editor y **pega** el código.
+4. Haz clic en el ícono de **hoja con +** (*New file*, arriba del editor) y llama al archivo `inventario.txt`.
+5. Vuelve a esta página, abre **`inventario.txt`**, cópialo y **pégalo** en ese archivo nuevo.
+6. Presiona el botón verde **Run**. El programa aparece abajo.
+
+### Opción B · En tu computador 💻
+
+**Paso 1 · Descargar el proyecto**
+
+En esta página: botón verde **`<> Code`** → **Download ZIP**. Busca el `.zip` en tu carpeta de Descargas, haz clic derecho → **Extraer todo**.
+
+**Paso 2 · Instalar el compilador (solo la primera vez)**
+
+<details>
+<summary><b>🪟 Windows</b></summary>
+
+1. Descarga e instala **MSYS2** desde [msys2.org](https://www.msys2.org/). Dale *Next* a todo, sin cambiar nada.
+2. Al terminar se abre una ventana negra. Pega esto (clic derecho → *Paste*) y presiona Enter:
+   ```
+   pacman -S --needed mingw-w64-ucrt-x86_64-gcc
+   ```
+   Cuando pregunte `[Y/n]`, escribe `Y` y Enter.
+3. Tecla Windows → escribe **variables de entorno** → *Editar las variables de entorno de esta cuenta* → selecciona **Path** → **Editar** → **Nuevo** → pega `C:\msys64\ucrt64\bin` → **Aceptar** en todo.
+
+</details>
+
+<details>
+<summary><b>🍎 Mac</b></summary>
+
+Abre la app **Terminal**, escribe esto y presiona Enter. Acepta la instalación que aparece:
+```
+xcode-select --install
+```
+
+</details>
+
+**Paso 3 · Compilar y abrir**
+
+<details>
+<summary><b>🪟 Windows</b></summary>
+
+1. Abre la carpeta que extrajiste (la que tiene `inventario.cpp`).
+2. Haz clic en la **barra de dirección** de arriba, escribe `cmd` y presiona Enter. Se abre una ventana negra en esa carpeta.
+3. Escribe estas dos líneas, presionando Enter después de cada una:
+   ```
+   g++ inventario.cpp -o magicianred.exe
+   magicianred.exe
+   ```
+
+</details>
+
+<details>
+<summary><b>🍎 Mac</b></summary>
+
+1. Abre **Terminal**, escribe `cd ` (con un espacio al final) y **arrastra** la carpeta del proyecto a la ventana. Presiona Enter.
+2. Escribe estas dos líneas, presionando Enter después de cada una:
+   ```
+   g++ inventario.cpp -o magicianred.exe
+   ./magicianred.exe
+   ```
+
+</details>
+
+### 🔑 Para entrar
+
+| Usuario | Contraseña |
+| :-: | :-: |
+| `admin` | `tcg2026` |
+
+> 💡 **¿Quieres empezar con los datos de fábrica?** El programa va guardando los cambios en `inventario.txt`. Para volver al inicio, copia el contenido de `inventario_original.txt` dentro de `inventario.txt`.
+
+---
+
+## 📁 Archivos
+
+| Archivo | Qué es |
+| --- | --- |
+| `inventario.cpp` | El programa |
+| `inventario.txt` | Los productos y sus ventas (el programa lo lee y lo actualiza) |
+| `inventario_original.txt` | Copia de los datos de prueba, para empezar de cero |
+
+## 👥 Equipo
+
+<div align="center">
+
+| Miguel Ángel Cano | Juan Sebastián Cadavid | Juan Guillermo Miller Domínguez |
+| :-: | :-: | :-: |
+| Matriz de ventas y reportes | Inventario (CRUD) y facturación | Archivos, inicio de sesión y menú |
+
+<br>
+
+*Hecho en Cali* 🇨🇴
+
+</div>
