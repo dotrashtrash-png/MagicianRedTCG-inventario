@@ -16,7 +16,7 @@
 
 ## ✨ Qué hace
 
-**MagicianRed TCG S.A.S.** es una tienda (ficticia) de Cali que vende sobres, cajas, mazos, cartas sueltas y accesorios. Antes llevaba todo en un cuaderno; este programa lo reemplaza.
+**MagicianRed TCG S.A.S.** es una tienda (ficticia) de Cali que vende sobres, cajas, mazos, cartas sueltas y accesorios de **Pokémon TCG**, **Magic: The Gathering**, **Yu-Gi-Oh!** y **One Piece Card Game**. Antes llevaba todo en un cuaderno; este programa lo reemplaza.
 
 | | Función | Detalle |
 | :-: | --- | --- |
@@ -30,26 +30,91 @@
 ## 👀 Así se ve
 
 ```
-=== MAGICIANRED TCG ===
-1. Registrar producto
-2. Ver inventario
-3. Buscar producto
-4. Actualizar producto
-5. Eliminar producto
-6. Registrar venta
-7. Sobre sorpresa
-8. Reportes
-0. Salir
-Opcion:
+   #   #  ###   #### ###  #### ###  ###  #   # ####  ##### ####
+   ## ## #   # #      #  #      #  #   # ##  # #   # #     #   #
+   # # # ##### #  ##  #  #      #  ##### # # # ####  ####  #   #
+   #   # #   # #   #  #  #      #  #   # #  ## #  #  #     #   #
+   #   # #   #  ###  ###  #### ### #   # #   # #   # ##### ####
+
+   ==========[  T R A D I N G   C A R D   G A M E S  ]==========
+
+      .---------.  .---------.  .---------.  .---------.
+      |*        |  |+        |  |<>       |  |$        |
+      | POKEMON |  |  MAGIC  |  |YU-GI-OH!|  |ONE PIECE|
+      |   TCG   |  |   THE   |  |         |  |  CARD   |
+      |        *|  |GATHERING|  |       <>|  |  GAME  $|
+      '---------'  '---------'  '---------'  '---------'
+
+          Tienda de cartas coleccionables  *  Cali, Colombia
 ```
 
+<table>
+<tr>
+<td>
+
 ```
-=== GRAFICO DE VENTAS DEL MES (* = 1 unidad) ===
-Sobre_Dragones_Ancestrales    | ************************************************** 50
-Caja_Dragones_Ancestrales     | **** 4
-Mazo_Inicial_Fuego            | ********** 10
-Carta_Lobo_Sombra             | ****************** 18
-Fundas_x100                   | ******************************* 31
+  +==================================================+
+  |        MAGICIANRED TCG  *  MENU PRINCIPAL        |
+  +==================================================+
+  |  INVENTARIO                                      |
+  |    [1] Registrar producto                        |
+  |    [2] Ver inventario                            |
+  |    [3] Buscar producto                           |
+  |    [4] Actualizar producto                       |
+  |    [5] Eliminar producto                         |
+  |                                                  |
+  |  CAJA                                            |
+  |    [6] Registrar venta                           |
+  |    [7] Abrir sobre sorpresa                      |
+  |                                                  |
+  |  ANALISIS                                        |
+  |    [8] Reportes                                  |
+  +--------------------------------------------------+
+  |    [0] Guardar y salir                           |
+  +==================================================+
+```
+
+</td>
+<td>
+
+```
+  +========================================+
+  |         MAGICIANRED TCG S.A.S.         |
+  |     Cartas coleccionables  -  Cali     |
+  |            FACTURA DE VENTA            |
+  +========================================+
+  | Producto    Caja_Booster_Magic         |
+  | Cantidad    1                          |
+  | Semana      2                          |
+  |----------------------------------------|
+  | Subtotal    $                520000.00 |
+  | Descuento   -$                52000.00 |
+  | IVA 19%     $                 88920.00 |
+  +========================================+
+  | TOTAL       $                556920.00 |
+  +========================================+
+  |    Gracias por tu compra, duelista!    |
+  |  Que el corazon de las cartas te guie  |
+  +========================================+
+```
+
+</td>
+</tr>
+</table>
+
+```
+  ~ ~ ~   Abriendo sobre sorpresa...   ~ ~ ~
+
+     .------------------------------.
+     | CARTA 1 de 3                 |
+     |                              |
+     | Carta_Pikachu                |
+     '------------------------------'
+     .------------------------------.
+     | CARTA 2 de 3                 |
+     |                              |
+     | Carta_Luffy_Lider            |
+     '------------------------------'
 ```
 
 ---

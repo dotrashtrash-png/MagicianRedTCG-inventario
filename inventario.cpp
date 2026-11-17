@@ -20,6 +20,7 @@ const string ARCHIVO = "inventario.txt";
 const string HISTORIAL = "historial_ventas.txt";
 
 // Prototipos
+void mostrarPortada();
 bool iniciarSesion();
 int leerEntero(string mensaje, int minimo, int maximo);
 int cargarInventario(int codigo[], string nombre[], string categoria[], double precio[],
@@ -68,29 +69,41 @@ int main() {
     // Semilla para que rand() no saque siempre las mismas cartas
     srand(time(0));
 
+    mostrarPortada();
+
     // Si falla el login 3 veces, el programa termina
     if (!iniciarSesion()) {
-        cout << "Acceso bloqueado." << endl;
+        cout << "  [X] Acceso bloqueado: se acabaron los 3 intentos." << endl;
         return 0;
     }
 
     n = cargarInventario(codigo, nombre, categoria, precio, stock, promo, ventas);
-    cout << "Productos cargados: " << n << endl;
+    cout << "  Inventario cargado: " << n << " productos en vitrina." << endl;
 
     // El menu se repite hasta que el usuario elija 0 (Salir)
     while (opcion != 0) {
-        cout << "\n=== MAGICIANRED TCG ===" << endl;
-        cout << "1. Registrar producto" << endl;
-        cout << "2. Ver inventario" << endl;
-        cout << "3. Buscar producto" << endl;
-        cout << "4. Actualizar producto" << endl;
-        cout << "5. Eliminar producto" << endl;
-        cout << "6. Registrar venta" << endl;
-        cout << "7. Sobre sorpresa" << endl;
-        cout << "8. Reportes" << endl;
-        cout << "0. Salir" << endl;
+        cout << endl;
+        cout << "  +==================================================+" << endl;
+        cout << "  |        MAGICIANRED TCG  *  MENU PRINCIPAL        |" << endl;
+        cout << "  +==================================================+" << endl;
+        cout << "  |  INVENTARIO                                      |" << endl;
+        cout << "  |    [1] Registrar producto                        |" << endl;
+        cout << "  |    [2] Ver inventario                            |" << endl;
+        cout << "  |    [3] Buscar producto                           |" << endl;
+        cout << "  |    [4] Actualizar producto                       |" << endl;
+        cout << "  |    [5] Eliminar producto                         |" << endl;
+        cout << "  |                                                  |" << endl;
+        cout << "  |  CAJA                                            |" << endl;
+        cout << "  |    [6] Registrar venta                           |" << endl;
+        cout << "  |    [7] Abrir sobre sorpresa                      |" << endl;
+        cout << "  |                                                  |" << endl;
+        cout << "  |  ANALISIS                                        |" << endl;
+        cout << "  |    [8] Reportes                                  |" << endl;
+        cout << "  +--------------------------------------------------+" << endl;
+        cout << "  |    [0] Guardar y salir                           |" << endl;
+        cout << "  +==================================================+" << endl;
 
-        opcion = leerEntero("Opcion: ", 0, 8);
+        opcion = leerEntero("  >> Elige una opcion: ", 0, 8);
 
         // Despues de cada cambio se guarda el archivo para no perder datos
         switch (opcion) {
@@ -129,39 +142,43 @@ int main() {
 
             // Submenu de reportes: un switch dentro de otro switch
             case 8:
-                cout << "\n--- REPORTES ---" << endl;
-                cout << "1. Mostrar ventas" << endl;
-                cout << "2. Calcular ingresos del mes" << endl;
-                cout << "3. Producto mas vendido" << endl;
-                cout << "4. Semana con mas ventas" << endl;
-                cout << "5. Reporte de stock bajo" << endl;
-                cout << "6. Grafico de ventas" << endl;
+                cout << endl;
+                cout << "  +--------------------------------------------------+" << endl;
+                cout << "  |                 REPORTES DEL MES                 |" << endl;
+                cout << "  +--------------------------------------------------+" << endl;
+                cout << "  |    [1] Matriz de ventas por semana               |" << endl;
+                cout << "  |    [2] Ingresos del mes                          |" << endl;
+                cout << "  |    [3] Producto mas vendido                      |" << endl;
+                cout << "  |    [4] Semana con mas ventas                     |" << endl;
+                cout << "  |    [5] Productos con stock bajo                  |" << endl;
+                cout << "  |    [6] Grafico de ventas                         |" << endl;
+                cout << "  +--------------------------------------------------+" << endl;
 
-                opcionReporte = leerEntero("Opcion de reporte: ", 1, 6);
+                opcionReporte = leerEntero("  >> Elige un reporte: ", 1, 6);
 
                 switch (opcionReporte) {
                     case 1:
                         mostrarVentas(codigo, nombre, ventas, n);
                         break;
                     case 2:
-                        cout << fixed << setprecision(2) << "Ingresos del mes: $"
+                        cout << fixed << setprecision(2) << "\n  $ Ingresos del mes: $"
                              << calcularIngresos(precio, ventas, n) << endl;
                         break;
                     case 3:
                         pos = productoMasVendido(ventas, n);
                         if (pos == -1) {
-                            cout << "No hay productos." << endl;
+                            cout << "  [!] No hay productos." << endl;
                         } else {
-                            cout << "Mas vendido: " << nombre[pos] << " ("
+                            cout << "\n  * Producto estrella: " << nombre[pos] << " ("
                                  << totalVendido(ventas, pos) << " unidades)" << endl;
                         }
                         break;
                     case 4:
                         sem = semanaConMasVentas(ventas, n);
                         if (sem == -1) {
-                            cout << "No hay productos." << endl;
+                            cout << "  [!] No hay productos." << endl;
                         } else {
-                            cout << "Semana con mas ventas: " << sem + 1 << endl;
+                            cout << "\n  * Mejor semana del mes: semana " << sem + 1 << endl;
                         }
                         break;
                     case 5:
@@ -171,7 +188,7 @@ int main() {
                         graficoVentas(nombre, ventas, n);
                         break;
                     default:
-                        cout << "Opcion invalida." << endl;
+                        cout << "  [!] Opcion invalida." << endl;
                         break;
                 }
                 break;
@@ -179,16 +196,39 @@ int main() {
             // Al salir tambien se guarda
             case 0:
                 guardarInventario(codigo, nombre, categoria, precio, stock, promo, ventas, n);
-                cout << "Hasta luego." << endl;
+                cout << endl;
+                cout << "  Inventario guardado. Hasta la proxima, planeswalker!" << endl;
                 break;
 
             default:
-                cout << "Opcion invalida." << endl;
+                cout << "  [!] Opcion invalida." << endl;
                 break;
         }
     }
 
     return 0;
+}
+
+// Muestra la portada del programa: el nombre de la tienda y los juegos que vende.
+// No recibe parametros. No retorna nada.
+void mostrarPortada() {
+    cout << endl;
+    cout << "   #   #  ###   #### ###  #### ###  ###  #   # ####  ##### ####" << endl;
+    cout << "   ## ## #   # #      #  #      #  #   # ##  # #   # #     #   #" << endl;
+    cout << "   # # # ##### #  ##  #  #      #  ##### # # # ####  ####  #   #" << endl;
+    cout << "   #   # #   # #   #  #  #      #  #   # #  ## #  #  #     #   #" << endl;
+    cout << "   #   # #   #  ###  ###  #### ### #   # #   # #   # ##### ####" << endl;
+    cout << "" << endl;
+    cout << "   ==========[  T R A D I N G   C A R D   G A M E S  ]==========" << endl;
+    cout << "" << endl;
+    cout << "      .---------.  .---------.  .---------.  .---------." << endl;
+    cout << "      |*        |  |+        |  |<>       |  |$        |" << endl;
+    cout << "      | POKEMON |  |  MAGIC  |  |YU-GI-OH!|  |ONE PIECE|" << endl;
+    cout << "      |   TCG   |  |   THE   |  |         |  |  CARD   |" << endl;
+    cout << "      |        *|  |GATHERING|  |       <>|  |  GAME  $|" << endl;
+    cout << "      '---------'  '---------'  '---------'  '---------'" << endl;
+    cout << "" << endl;
+    cout << "          Tienda de cartas coleccionables  *  Cali, Colombia" << endl;
 }
 
 // Pide usuario y contrasena con maximo 3 intentos.
@@ -201,18 +241,21 @@ bool iniciarSesion() {
     int intento;
 
     for (intento = 1; intento <= 3; intento++) {
-        cout << "\n=== INICIO DE SESION (Intento " << intento << " de 3) ===" << endl;
-        cout << "Usuario: ";
+        cout << endl;
+        cout << "  +--------------------------------------+" << endl;
+        cout << "  |     ACCESO AL SISTEMA  (" << intento << " de 3)      |" << endl;
+        cout << "  +--------------------------------------+" << endl;
+        cout << "    Usuario    : ";
         cin >> usuario;
-        cout << "Contrasena: ";
+        cout << "    Contrasena : ";
         cin >> clave;
         cin.ignore(1000, '\n');
 
         if (usuario == USER_CORRECTO && clave == PASS_CORRECTA) {
-            cout << "Bienvenido al sistema MagicianRed TCG." << endl;
+            cout << "\n  Acceso concedido. Bienvenido a bordo, nakama!" << endl;
             return true;
         } else {
-            cout << "Usuario o contrasena incorrectos." << endl;
+            cout << "  [X] Usuario o contrasena incorrectos." << endl;
         }
     }
 
@@ -230,7 +273,7 @@ int leerEntero(string mensaje, int minimo, int maximo) {
     while (cin.fail() || valor < minimo || valor > maximo) {
         cin.clear();
         cin.ignore(1000, '\n');
-        cout << "Error. Ingrese un numero entre " << minimo << " y " << maximo << ": ";
+        cout << "  [!] Ingrese un numero entre " << minimo << " y " << maximo << ": ";
         cin >> valor;
     }
     cin.ignore(1000, '\n');
@@ -342,11 +385,11 @@ void sobreSorpresa(string nombre[], string categoria[], int stock[],
     }
 
     if (disponibles < 3) {
-        cout << "No hay suficientes cartas con stock para armar un sobre (se necesitan 3)." << endl;
+        cout << "  [!] No hay suficientes cartas con stock para armar un sobre (se necesitan 3)." << endl;
         return;
     }
 
-    semana = leerEntero("Ingrese la semana de la venta (1 a " + to_string(SEMANAS) + "): ",
+    semana = leerEntero("  Ingrese la semana de la venta (1 a " + to_string(SEMANAS) + "): ",
                         1, SEMANAS);
 
     // Se sacan posiciones al azar hasta tener 3 cartas distintas con stock
@@ -368,8 +411,9 @@ void sobreSorpresa(string nombre[], string categoria[], int stock[],
     ivaSobre = PRECIO_SOBRE * IVA;
     totalSobre = PRECIO_SOBRE + ivaSobre;
 
-    cout << "\n=== FACTURA SOBRE SORPRESA ===" << endl;
-    cout << "Cartas obtenidas:" << endl;
+    cout << endl;
+    cout << "  ~ ~ ~   Abriendo sobre sorpresa...   ~ ~ ~" << endl;
+    cout << endl;
 
     resumenCartas = "";
     // Se descuenta cada carta del stock y se suma la venta en esa semana
@@ -377,7 +421,11 @@ void sobreSorpresa(string nombre[], string categoria[], int stock[],
         pos = elegidos[k];
         stock[pos]--;
         ventas[pos][semana - 1]++;
-        cout << "  " << (k + 1) << ". " << nombre[pos] << endl;
+        cout << "     .------------------------------." << endl;
+        cout << "     | " << left << setw(28) << ("CARTA " + to_string(k + 1) + " de 3") << " |" << endl;
+        cout << "     |                              |" << endl;
+        cout << "     | " << left << setw(28) << nombre[pos] << " |" << endl;
+        cout << "     '------------------------------'" << endl;
         resumenCartas += nombre[pos];
         if (k < 2) {
             resumenCartas += ", ";
@@ -385,9 +433,13 @@ void sobreSorpresa(string nombre[], string categoria[], int stock[],
     }
 
     cout << fixed << setprecision(0);
-    cout << "Subtotal: $" << PRECIO_SOBRE << endl;
-    cout << "IVA (19%): $" << ivaSobre << endl;
-    cout << "Total a pagar: $" << totalSobre << endl;
+    cout << endl;
+    cout << "  +----------------------------------------+" << endl;
+    cout << "  | " << left << setw(12) << "Sobre" << "$" << right << setw(25) << PRECIO_SOBRE << " |" << endl;
+    cout << "  | " << left << setw(12) << "IVA 19%" << "$" << right << setw(25) << ivaSobre << " |" << endl;
+    cout << "  | " << left << setw(12) << "TOTAL" << "$" << right << setw(25) << totalSobre << " |" << endl;
+    cout << "  +----------------------------------------+" << endl;
+    cout << "  Hazte con todos!" << endl;
 
     guardarHistorial("Sobre Sorpresa (Semana " + to_string(semana) + "): " +
                      resumenCartas + " | Total: $" + to_string((int)totalSobre));
@@ -420,21 +472,21 @@ void registrarProducto(int codigo[], string nombre[], string categoria[], double
 
     // Antes de registrar: que haya espacio y que el codigo no exista
     if (n == MAX) {
-        cout << "Inventario lleno." << endl;
+        cout << "  [!] Inventario lleno." << endl;
     } else {
-        nuevoCodigo = leerEntero("Codigo: ", 1, 99999);
+        nuevoCodigo = leerEntero("  Codigo: ", 1, 99999);
         if (buscarProducto(codigo, n, nuevoCodigo) != -1) {
-            cout << "Ese codigo ya existe." << endl;
+            cout << "  [!] Ese codigo ya existe." << endl;
         } else {
             // El producto nuevo va en la posicion n, la primera libre
             codigo[n] = nuevoCodigo;
 
-            cout << "Nombre (use _ en vez de espacios): ";
+            cout << "  Nombre (use _ en vez de espacios): ";
             cin >> nombre[n];
             cin.ignore(1000, '\n');
 
-            cout << "1. Sobre  2. Caja  3. Mazo  4. Carta  5. Accesorio" << endl;
-            opcionCategoria = leerEntero("Categoria: ", 1, 5);
+            cout << "  [1] Sobre  [2] Caja  [3] Mazo  [4] Carta  [5] Accesorio" << endl;
+            opcionCategoria = leerEntero("  Categoria: ", 1, 5);
             // if/else anidados para pasar de la opcion al nombre de la categoria
             if (opcionCategoria == 1) {
                 categoria[n] = "Sobre";
@@ -457,7 +509,7 @@ void registrarProducto(int codigo[], string nombre[], string categoria[], double
             // El precio se pide hasta que sea mayor que 0
             nuevoPrecio = 0;
             while (nuevoPrecio <= 0) {
-                cout << "Precio: ";
+                cout << "  Precio: ";
                 cin >> nuevoPrecio;
                 if (cin.fail()) {
                     cin.clear();
@@ -465,20 +517,20 @@ void registrarProducto(int codigo[], string nombre[], string categoria[], double
                 }
                 cin.ignore(1000, '\n');
                 if (nuevoPrecio <= 0) {
-                    cout << "Valor invalido. El precio debe ser mayor que 0." << endl;
+                    cout << "  [!] Valor invalido. El precio debe ser mayor que 0." << endl;
                 }
             }
             precio[n] = nuevoPrecio;
 
-            stock[n] = leerEntero("Stock: ", 0, 10000);
-            promo[n] = (leerEntero("Promocion (1 = si, 0 = no): ", 0, 1) == 1);
+            stock[n] = leerEntero("  Stock: ", 0, 10000);
+            promo[n] = (leerEntero("  Promocion (1 = si, 0 = no): ", 0, 1) == 1);
 
             // El producto nuevo empieza sin ventas
             for (j = 0; j < SEMANAS; j++) {
                 ventas[n][j] = 0;
             }
             n++;
-            cout << "Producto registrado." << endl;
+            cout << "  [OK] Producto registrado en la vitrina." << endl;
         }
     }
 }
@@ -490,20 +542,25 @@ void listarProductos(int codigo[], string nombre[], string categoria[], double p
     int i;
 
     if (n == 0) {
-        cout << "No hay productos registrados." << endl;
+        cout << "  [!] No hay productos registrados." << endl;
     } else {
-        cout << endl << "=== INVENTARIO ===" << endl;
+        cout << endl;
+        cout << "  " << string(74, '=') << endl;
+        cout << "    VITRINA DE MAGICIANRED TCG  *  " << n << " productos" << endl;
+        cout << "  " << string(74, '=') << endl;
         // setw da un ancho fijo a cada columna para que la tabla quede alineada
-        cout << left << setw(8) << "Codigo" << setw(30) << "Producto"
+        cout << "  " << left << setw(8) << "Codigo" << setw(30) << "Producto"
              << setw(12) << "Categoria" << right << setw(10) << "Precio"
              << setw(7) << "Stock" << setw(7) << "Promo" << endl;
+        cout << "  " << string(74, '-') << endl;
         cout << fixed << setprecision(0);
         // El ternario (promo[i] ? "Si" : "No") muestra Si o No segun la promocion
         for (i = 0; i < n; i++) {
-            cout << left << setw(8) << codigo[i] << setw(30) << nombre[i]
+            cout << "  " << left << setw(8) << codigo[i] << setw(30) << nombre[i]
                  << setw(12) << categoria[i] << right << setw(10) << precio[i]
                  << setw(7) << stock[i] << setw(7) << (promo[i] ? "Si" : "No") << endl;
         }
+        cout << "  " << string(74, '=') << endl;
     }
 }
 
@@ -515,24 +572,29 @@ void verProducto(int codigo[], string nombre[], string categoria[], double preci
     int pos;
     int j;
 
-    codigoBuscado = leerEntero("Codigo a buscar: ", 1, 99999);
+    codigoBuscado = leerEntero("  Codigo a buscar: ", 1, 99999);
     pos = buscarProducto(codigo, n, codigoBuscado);
     if (pos == -1) {
-        cout << "No existe un producto con ese codigo." << endl;
+        cout << "  [!] No existe un producto con ese codigo." << endl;
     } else {
-        cout << endl << "=== PRODUCTO " << codigo[pos] << " ===" << endl;
-        cout << "Nombre:    " << nombre[pos] << endl;
-        cout << "Categoria: " << categoria[pos] << endl;
         cout << fixed << setprecision(0);
-        cout << "Precio:    $" << precio[pos] << endl;
-        cout << "Stock:     " << stock[pos] << endl;
-        cout << "Promocion: " << (promo[pos] ? "Si" : "No") << endl;
-        cout << "Ventas por semana:" << endl;
+        cout << endl;
+        cout << "  .----------------------------------------." << endl;
+        cout << "  | " << left << setw(38) << ("#" + to_string(codigo[pos]) + "  " + nombre[pos]) << " |" << endl;
+        cout << "  |----------------------------------------|" << endl;
+        cout << "  | " << left << setw(12) << "Categoria" << setw(26) << categoria[pos] << " |" << endl;
+        cout << "  | " << left << setw(12) << "Precio" << "$" << setw(25) << precio[pos] << " |" << endl;
+        cout << "  | " << left << setw(12) << "Stock" << setw(26) << stock[pos] << " |" << endl;
+        cout << "  | " << left << setw(12) << "Promocion" << setw(26) << (promo[pos] ? "Si (10%)" : "No") << " |" << endl;
+        cout << "  |----------------------------------------|" << endl;
+        cout << "  | " << left << setw(38) << "Ventas del mes" << " |" << endl;
         // Recorre la fila del producto en la matriz, una columna por semana
         for (j = 0; j < SEMANAS; j++) {
-            cout << "  Semana " << j + 1 << ": " << ventas[pos][j] << endl;
+            cout << "  |   Semana " << j + 1 << "  " << right << setw(4) << ventas[pos][j]
+                 << left << setw(23) << " unidades" << "|" << endl;
         }
-        cout << "Total del mes: " << totalVendido(ventas, pos) << " unidades" << endl;
+        cout << "  | " << left << setw(12) << "TOTAL" << setw(26) << (to_string(totalVendido(ventas, pos)) + " unidades") << " |" << endl;
+        cout << "  '----------------------------------------'" << endl;
     }
 }
 
@@ -546,23 +608,23 @@ void actualizarProducto(int codigo[], string nombre[], string categoria[], doubl
     int semana;
     double nuevoPrecio;
 
-    codigoBuscado = leerEntero("Codigo a actualizar: ", 1, 99999);
+    codigoBuscado = leerEntero("  Codigo a actualizar: ", 1, 99999);
     pos = buscarProducto(codigo, n, codigoBuscado);
     if (pos == -1) {
-        cout << "No existe un producto con ese codigo." << endl;
+        cout << "  [!] No existe un producto con ese codigo." << endl;
     } else {
-        cout << "1. Nombre  2. Precio  3. Stock  4. Promocion  5. Ventas de una semana" << endl;
-        opcion = leerEntero("Que desea cambiar: ", 1, 5);
+        cout << "  [1] Nombre  [2] Precio  [3] Stock  [4] Promocion  [5] Ventas de una semana" << endl;
+        opcion = leerEntero("  Que desea cambiar: ", 1, 5);
         switch (opcion) {
             case 1:
-                cout << "Nuevo nombre (use _ en vez de espacios): ";
+                cout << "  Nuevo nombre (use _ en vez de espacios): ";
                 cin >> nombre[pos];
                 cin.ignore(1000, '\n');
                 break;
             case 2:
                 nuevoPrecio = 0;
                 while (nuevoPrecio <= 0) {
-                    cout << "Nuevo precio: ";
+                    cout << "  Nuevo precio: ";
                     cin >> nuevoPrecio;
                     if (cin.fail()) {
                         cin.clear();
@@ -570,24 +632,24 @@ void actualizarProducto(int codigo[], string nombre[], string categoria[], doubl
                     }
                     cin.ignore(1000, '\n');
                     if (nuevoPrecio <= 0) {
-                        cout << "Valor invalido. El precio debe ser mayor que 0." << endl;
+                        cout << "  [!] Valor invalido. El precio debe ser mayor que 0." << endl;
                     }
                 }
                 precio[pos] = nuevoPrecio;
                 break;
             case 3:
-                stock[pos] = leerEntero("Nuevo stock: ", 0, 10000);
+                stock[pos] = leerEntero("  Nuevo stock: ", 0, 10000);
                 break;
             case 4:
-                promo[pos] = (leerEntero("Promocion (1 = si, 0 = no): ", 0, 1) == 1);
+                promo[pos] = (leerEntero("  Promocion (1 = si, 0 = no): ", 0, 1) == 1);
                 break;
             // Cambia una celda de la matriz; semana - 1 porque las columnas empiezan en 0
             case 5:
-                semana = leerEntero("Semana (1 a " + to_string(SEMANAS) + "): ", 1, SEMANAS);
-                ventas[pos][semana - 1] = leerEntero("Unidades vendidas: ", 0, 10000);
+                semana = leerEntero("  Semana (1 a " + to_string(SEMANAS) + "): ", 1, SEMANAS);
+                ventas[pos][semana - 1] = leerEntero("  Unidades vendidas: ", 0, 10000);
                 break;
         }
-        cout << "Producto actualizado." << endl;
+        cout << "  [OK] Producto actualizado." << endl;
     }
 }
 
@@ -601,13 +663,13 @@ void eliminarProducto(int codigo[], string nombre[], string categoria[], double 
     int i;
     int j;
 
-    codigoBuscado = leerEntero("Codigo a eliminar: ", 1, 99999);
+    codigoBuscado = leerEntero("  Codigo a eliminar: ", 1, 99999);
     pos = buscarProducto(codigo, n, codigoBuscado);
     if (pos == -1) {
-        cout << "No existe un producto con ese codigo." << endl;
+        cout << "  [!] No existe un producto con ese codigo." << endl;
     } else {
-        cout << "Se eliminara: " << nombre[pos] << endl;
-        confirmar = leerEntero("Confirma (1 = si, 0 = no): ", 0, 1);
+        cout << "  Se eliminara: " << nombre[pos] << endl;
+        confirmar = leerEntero("  Confirma (1 = si, 0 = no): ", 0, 1);
         if (confirmar == 1) {
             // Desde el eliminado en adelante, cada producto toma los datos del siguiente
             for (i = pos; i < n - 1; i++) {
@@ -624,9 +686,9 @@ void eliminarProducto(int codigo[], string nombre[], string categoria[], double 
             }
             // n baja en 1; por eso se recibe con &
             n--;
-            cout << "Producto eliminado." << endl;
+            cout << "  [OK] Producto eliminado." << endl;
         } else {
-            cout << "Eliminacion cancelada." << endl;
+            cout << "  Eliminacion cancelada." << endl;
         }
     }
 }
@@ -644,17 +706,17 @@ void venderProducto(int codigo[], string nombre[], double precio[], int stock[],
     double iva;
     double total;
 
-    codigoBuscado = leerEntero("Codigo a vender: ", 1, 99999);
+    codigoBuscado = leerEntero("  Codigo a vender: ", 1, 99999);
     pos = buscarProducto(codigo, n, codigoBuscado);
     if (pos == -1) {
-        cout << "No existe un producto con ese codigo." << endl;
+        cout << "  [!] No existe un producto con ese codigo." << endl;
     } else {
         if (stock[pos] == 0) {
-            cout << "Producto agotado." << endl;
+            cout << "  [!] Producto agotado." << endl;
         } else {
             // No deja vender mas de lo que hay en stock
-            cantidad = leerEntero("Cantidad: ", 1, stock[pos]);
-            semana = leerEntero("Semana (1 a " + to_string(SEMANAS) + "): ", 1, SEMANAS);
+            cantidad = leerEntero("  Cantidad: ", 1, stock[pos]);
+            semana = leerEntero("  Semana (1 a " + to_string(SEMANAS) + "): ", 1, SEMANAS);
 
             // Si tiene promocion se descuenta el 10% y el IVA se cobra sobre el valor con descuento
             subtotal = precio[pos] * cantidad;
@@ -666,14 +728,26 @@ void venderProducto(int codigo[], string nombre[], double precio[], int stock[],
             stock[pos] = stock[pos] - cantidad;
             ventas[pos][semana - 1] = ventas[pos][semana - 1] + cantidad;
 
-            cout << endl << "===== FACTURA =====" << endl;
             cout << fixed << setprecision(2);
-            cout << left << setw(12) << "Producto:" << nombre[pos] << endl;
-            cout << left << setw(12) << "Cantidad:" << cantidad << endl;
-            cout << left << setw(12) << "Subtotal:" << right << setw(14) << subtotal << endl;
-            cout << left << setw(12) << "Descuento:" << right << setw(14) << descuento << endl;
-            cout << left << setw(12) << "IVA 19%:" << right << setw(14) << iva << endl;
-            cout << left << setw(12) << "TOTAL:" << right << setw(14) << total << endl;
+            cout << endl;
+            cout << "  +========================================+" << endl;
+            cout << "  |         MAGICIANRED TCG S.A.S.         |" << endl;
+            cout << "  |     Cartas coleccionables  -  Cali     |" << endl;
+            cout << "  |            FACTURA DE VENTA            |" << endl;
+            cout << "  +========================================+" << endl;
+            cout << "  | " << left << setw(12) << "Producto" << setw(26) << nombre[pos] << " |" << endl;
+            cout << "  | " << left << setw(12) << "Cantidad" << setw(26) << cantidad << " |" << endl;
+            cout << "  | " << left << setw(12) << "Semana" << setw(26) << semana << " |" << endl;
+            cout << "  |----------------------------------------|" << endl;
+            cout << "  | " << left << setw(12) << "Subtotal" << "$" << right << setw(25) << subtotal << " |" << endl;
+            cout << "  | " << left << setw(12) << "Descuento" << "-$" << right << setw(24) << descuento << " |" << endl;
+            cout << "  | " << left << setw(12) << "IVA 19%" << "$" << right << setw(25) << iva << " |" << endl;
+            cout << "  +========================================+" << endl;
+            cout << "  | " << left << setw(12) << "TOTAL" << "$" << right << setw(25) << total << " |" << endl;
+            cout << "  +========================================+" << endl;
+            cout << "  |    Gracias por tu compra, duelista!    |" << endl;
+            cout << "  |  Que el corazon de las cartas te guie  |" << endl;
+            cout << "  +========================================+" << endl;
 
             guardarHistorial("Venta: " + to_string(cantidad) + " x " + nombre[pos]);
         }
@@ -689,28 +763,34 @@ void mostrarVentas(int codigo[], string nombre[], int ventas[][SEMANAS], int n) 
     int totalGeneral;
 
     if (n == 0) {
-        cout << "No hay productos registrados." << endl;
+        cout << "  [!] No hay productos registrados." << endl;
     } else {
-        cout << endl << "=== VENTAS DEL MES (unidades) ===" << endl;
-
-        cout << left << setw(8) << "Codigo" << setw(30) << "Producto";
+        // El ancho de las lineas depende de SEMANAS, asi la tabla se adapta si cambia
+        cout << endl;
+        cout << "  " << string(46 + 5 * SEMANAS, '=') << endl;
+        cout << "    VENTAS DEL MES POR SEMANA (unidades)" << endl;
+        cout << "  " << string(46 + 5 * SEMANAS, '=') << endl;
+        cout << "  " << left << setw(8) << "Codigo" << setw(30) << "Producto";
         for (j = 0; j < SEMANAS; j++) {
             cout << "   S" << j + 1;
         }
         cout << right << setw(8) << "Total" << endl;
+        cout << "  " << string(46 + 5 * SEMANAS, '-') << endl;
 
         // Afuera recorre los productos (filas) y adentro las semanas (columnas)
         for (i = 0; i < n; i++) {
-            cout << left << setw(8) << codigo[i] << setw(30) << nombre[i];
+            cout << "  " << left << setw(8) << codigo[i] << setw(30) << nombre[i];
             for (j = 0; j < SEMANAS; j++) {
                 cout << right << setw(5) << ventas[i][j];
             }
             cout << right << setw(8) << totalVendido(ventas, i) << endl;
         }
 
+        cout << "  " << string(46 + 5 * SEMANAS, '-') << endl;
+
         // Ultima fila: al reves, afuera las semanas y adentro se suman los productos
         totalGeneral = 0;
-        cout << left << setw(38) << "Total por semana";
+        cout << "  " << left << setw(38) << "Total por semana";
         for (j = 0; j < SEMANAS; j++) {
             totalSemana = 0;
             for (i = 0; i < n; i++) {
@@ -720,6 +800,7 @@ void mostrarVentas(int codigo[], string nombre[], int ventas[][SEMANAS], int n) 
             cout << right << setw(5) << totalSemana;
         }
         cout << right << setw(8) << totalGeneral << endl;
+        cout << "  " << string(46 + 5 * SEMANAS, '=') << endl;
     }
 }
 
@@ -807,24 +888,28 @@ void reporteStockBajo(int codigo[], string nombre[], int stock[], int n) {
     int contador;
 
     contador = 0;
-    cout << endl << "=== PRODUCTOS CON STOCK BAJO (" << STOCK_MIN << " o menos) ===" << endl;
+    cout << endl;
+    cout << "  " << string(58, '=') << endl;
+    cout << "    ALERTA DE STOCK BAJO  (" << STOCK_MIN << " unidades o menos)" << endl;
+    cout << "  " << string(58, '=') << endl;
     // Muestra y cuenta los productos con stock en el minimo o por debajo
     for (i = 0; i < n; i++) {
         if (stock[i] <= STOCK_MIN) {
-            cout << left << setw(8) << codigo[i] << setw(30) << nombre[i]
+            cout << "  [!] " << left << setw(8) << codigo[i] << setw(30) << nombre[i]
                  << "quedan " << stock[i] << endl;
             contador = contador + 1;
         }
     }
 
+    cout << "  " << string(58, '-') << endl;
     if (contador == 0) {
         if (n == 0) {
-            cout << "No hay productos registrados." << endl;
+            cout << "  [!] No hay productos registrados." << endl;
         } else {
-            cout << "Todos los productos tienen stock suficiente." << endl;
+            cout << "  Todos los productos tienen stock suficiente." << endl;
         }
     } else {
-        cout << contador << " producto(s) por reabastecer." << endl;
+        cout << "  " << contador << " producto(s) por reabastecer." << endl;
     }
 }
 
@@ -836,17 +921,21 @@ void graficoVentas(string nombre[], int ventas[][SEMANAS], int n) {
     int total;
 
     if (n == 0) {
-        cout << "No hay productos registrados." << endl;
+        cout << "  [!] No hay productos registrados." << endl;
     } else {
-        cout << endl << "=== GRAFICO DE VENTAS DEL MES (* = 1 unidad) ===" << endl;
+        cout << endl;
+        cout << "  " << string(70, '=') << endl;
+        cout << "    GRAFICO DE VENTAS DEL MES      (cada * = 1 unidad vendida)" << endl;
+        cout << "  " << string(70, '=') << endl;
         for (i = 0; i < n; i++) {
             total = totalVendido(ventas, i);
-            cout << left << setw(30) << nombre[i] << "| ";
+            cout << "  " << left << setw(30) << nombre[i] << "| ";
             // Un * por cada unidad vendida
             for (k = 0; k < total; k++) {
                 cout << "*";
             }
             cout << " " << total << endl;
         }
+        cout << "  " << string(70, '=') << endl;
     }
 }
