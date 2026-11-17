@@ -2,12 +2,13 @@
 // MagicianRed TCG S.A.S. - Sistema de inventario y ventas
 // Proyecto final - Fundamentos de Programacion 2026-2
 // Universidad de San Buenaventura Cali - Prof. Giovanny Hidalgo
-// Integrantes: Miguel Angel Cano, [Cadavid - nombre completo], [Miller - nombre completo]
+// Integrantes: Miguel Angel Cano, Juan Sebastian Cadavid, Juan Guillermo Miller Dominguez
 // =====================================================================
 //
-// ESQUELETO: cada funcion ya existe pero esta vacia ("PENDIENTE").
-// Asi el archivo compila desde el primer dia. Cada uno reemplaza el
-// cuerpo de SUS funciones, dentro de SU zona, sin tocar las de los demas.
+// Organizacion del codigo:
+//   ZONA MILLER  - login, validacion de numeros, archivos y sobre sorpresa
+//   ZONA CADAVID - CRUD de productos y ventas con factura
+//   ZONA MIGUEL  - matriz de ventas y reportes
 //
 // Compilar:  g++ inventario.cpp -o magicianred.exe
 // Ejecutar:  .\magicianred.exe   (Windows)     ./magicianred.exe   (Linux)
@@ -414,46 +415,285 @@ void sobreSorpresa(string nombre[], string categoria[], int stock[],
 // ===== ZONA CADAVID ==================================================
 // =====================================================================
 
-// Retorna la posicion del producto con ese codigo, o -1 si no existe.
+// Busca un producto por su codigo.
+// Recibe: los codigos, la cantidad n y el codigo que se busca.
+// Retorna: la posicion del producto, o -1 si no existe.
 int buscarProducto(int codigo[], int n, int codigoBuscado) {
-    // PENDIENTE
-    return -1;
+    int i;
+    int pos;
+
+    pos = -1;
+    for (i = 0; i < n; i++) {
+        if (codigo[i] == codigoBuscado) {
+            pos = i;
+        }
+    }
+    return pos;
 }
 
-// Agrega un producto nuevo (valida espacio y codigo repetido).
+// Agrega un producto nuevo en la posicion n y aumenta n.
+// Antes verifica que haya espacio y que el codigo no exista.
+// Recibe: todos los arreglos, la matriz y n por referencia (&n) porque cambia.
+// No retorna nada (void).
 void registrarProducto(int codigo[], string nombre[], string categoria[], double precio[],
                        int stock[], bool promo[], int ventas[][SEMANAS], int &n) {
-    // PENDIENTE
+    int nuevoCodigo;
+    int opcionCategoria;
+    double nuevoPrecio;
+    int j;
+
+    if (n == MAX) {
+        cout << "Inventario lleno." << endl;
+    } else {
+        nuevoCodigo = leerEntero("Codigo: ", 1, 99999);
+        if (buscarProducto(codigo, n, nuevoCodigo) != -1) {
+            cout << "Ese codigo ya existe." << endl;
+        } else {
+            codigo[n] = nuevoCodigo;
+
+            cout << "Nombre (use _ en vez de espacios): ";
+            cin >> nombre[n];
+            cin.ignore(1000, '\n');
+
+            cout << "1. Sobre  2. Caja  3. Mazo  4. Carta  5. Accesorio" << endl;
+            opcionCategoria = leerEntero("Categoria: ", 1, 5);
+            if (opcionCategoria == 1) {
+                categoria[n] = "Sobre";
+            } else {
+                if (opcionCategoria == 2) {
+                    categoria[n] = "Caja";
+                } else {
+                    if (opcionCategoria == 3) {
+                        categoria[n] = "Mazo";
+                    } else {
+                        if (opcionCategoria == 4) {
+                            categoria[n] = "Carta";
+                        } else {
+                            categoria[n] = "Accesorio";
+                        }
+                    }
+                }
+            }
+
+            nuevoPrecio = 0;
+            while (nuevoPrecio <= 0) {
+                cout << "Precio: ";
+                cin >> nuevoPrecio;
+                if (cin.fail()) {
+                    cin.clear();
+                    nuevoPrecio = 0;
+                }
+                cin.ignore(1000, '\n');
+                if (nuevoPrecio <= 0) {
+                    cout << "Valor invalido. El precio debe ser mayor que 0." << endl;
+                }
+            }
+            precio[n] = nuevoPrecio;
+
+            stock[n] = leerEntero("Stock: ", 0, 10000);
+            promo[n] = (leerEntero("Promocion (1 = si, 0 = no): ", 0, 1) == 1);
+
+            for (j = 0; j < SEMANAS; j++) {
+                ventas[n][j] = 0;
+            }
+            n++;
+            cout << "Producto registrado." << endl;
+        }
+    }
 }
 
-// Muestra todos los productos en una tabla.
+// Muestra todos los productos en una tabla alineada.
+// Recibe: los arreglos de productos y la cantidad n.
+// No retorna nada (void).
 void listarProductos(int codigo[], string nombre[], string categoria[], double precio[],
                      int stock[], bool promo[], int n) {
-    // PENDIENTE
+    int i;
+
+    if (n == 0) {
+        cout << "No hay productos registrados." << endl;
+    } else {
+        cout << endl << "=== INVENTARIO ===" << endl;
+        cout << left << setw(8) << "Codigo" << setw(30) << "Producto"
+             << setw(12) << "Categoria" << right << setw(10) << "Precio"
+             << setw(7) << "Stock" << setw(7) << "Promo" << endl;
+        cout << fixed << setprecision(0);
+        for (i = 0; i < n; i++) {
+            cout << left << setw(8) << codigo[i] << setw(30) << nombre[i]
+                 << setw(12) << categoria[i] << right << setw(10) << precio[i]
+                 << setw(7) << stock[i] << setw(7) << (promo[i] ? "Si" : "No") << endl;
+        }
+    }
 }
 
 // Pide un codigo y muestra todos los datos del producto y sus ventas por semana.
+// Recibe: los arreglos, la matriz de ventas y n.
+// No retorna nada (void).
 void verProducto(int codigo[], string nombre[], string categoria[], double precio[],
                  int stock[], bool promo[], int ventas[][SEMANAS], int n) {
-    // PENDIENTE
+    int codigoBuscado;
+    int pos;
+    int j;
+
+    codigoBuscado = leerEntero("Codigo a buscar: ", 1, 99999);
+    pos = buscarProducto(codigo, n, codigoBuscado);
+    if (pos == -1) {
+        cout << "No existe un producto con ese codigo." << endl;
+    } else {
+        cout << endl << "=== PRODUCTO " << codigo[pos] << " ===" << endl;
+        cout << "Nombre:    " << nombre[pos] << endl;
+        cout << "Categoria: " << categoria[pos] << endl;
+        cout << fixed << setprecision(0);
+        cout << "Precio:    $" << precio[pos] << endl;
+        cout << "Stock:     " << stock[pos] << endl;
+        cout << "Promocion: " << (promo[pos] ? "Si" : "No") << endl;
+        cout << "Ventas por semana:" << endl;
+        for (j = 0; j < SEMANAS; j++) {
+            cout << "  Semana " << j + 1 << ": " << ventas[pos][j] << endl;
+        }
+        cout << "Total del mes: " << totalVendido(ventas, pos) << " unidades" << endl;
+    }
 }
 
-// Cambia los datos de un producto existente (incluida su fila de ventas).
+// Cambia un dato de un producto existente (incluida su fila de ventas).
+// Recibe: los arreglos, la matriz de ventas y n.
+// No retorna nada (void).
 void actualizarProducto(int codigo[], string nombre[], string categoria[], double precio[],
                         int stock[], bool promo[], int ventas[][SEMANAS], int n) {
-    // PENDIENTE
+    int codigoBuscado;
+    int pos;
+    int opcion;
+    int semana;
+    double nuevoPrecio;
+
+    codigoBuscado = leerEntero("Codigo a actualizar: ", 1, 99999);
+    pos = buscarProducto(codigo, n, codigoBuscado);
+    if (pos == -1) {
+        cout << "No existe un producto con ese codigo." << endl;
+    } else {
+        cout << "1. Nombre  2. Precio  3. Stock  4. Promocion  5. Ventas de una semana" << endl;
+        opcion = leerEntero("Que desea cambiar: ", 1, 5);
+        switch (opcion) {
+            case 1:
+                cout << "Nuevo nombre (use _ en vez de espacios): ";
+                cin >> nombre[pos];
+                cin.ignore(1000, '\n');
+                break;
+            case 2:
+                nuevoPrecio = 0;
+                while (nuevoPrecio <= 0) {
+                    cout << "Nuevo precio: ";
+                    cin >> nuevoPrecio;
+                    if (cin.fail()) {
+                        cin.clear();
+                        nuevoPrecio = 0;
+                    }
+                    cin.ignore(1000, '\n');
+                    if (nuevoPrecio <= 0) {
+                        cout << "Valor invalido. El precio debe ser mayor que 0." << endl;
+                    }
+                }
+                precio[pos] = nuevoPrecio;
+                break;
+            case 3:
+                stock[pos] = leerEntero("Nuevo stock: ", 0, 10000);
+                break;
+            case 4:
+                promo[pos] = (leerEntero("Promocion (1 = si, 0 = no): ", 0, 1) == 1);
+                break;
+            case 5:
+                semana = leerEntero("Semana (1 a " + to_string(SEMANAS) + "): ", 1, SEMANAS);
+                ventas[pos][semana - 1] = leerEntero("Unidades vendidas: ", 0, 10000);
+                break;
+        }
+        cout << "Producto actualizado." << endl;
+    }
 }
 
-// Elimina un producto y corre los demas (arreglos y matriz).
+// Elimina un producto: corre una posicion a la izquierda todos los que
+// estan despues (en todos los arreglos y en la matriz) y disminuye n.
+// Recibe: los arreglos, la matriz y n por referencia (&n) porque cambia.
+// No retorna nada (void).
 void eliminarProducto(int codigo[], string nombre[], string categoria[], double precio[],
                       int stock[], bool promo[], int ventas[][SEMANAS], int &n) {
-    // PENDIENTE
+    int codigoBuscado;
+    int pos;
+    int confirmar;
+    int i;
+    int j;
+
+    codigoBuscado = leerEntero("Codigo a eliminar: ", 1, 99999);
+    pos = buscarProducto(codigo, n, codigoBuscado);
+    if (pos == -1) {
+        cout << "No existe un producto con ese codigo." << endl;
+    } else {
+        cout << "Se eliminara: " << nombre[pos] << endl;
+        confirmar = leerEntero("Confirma (1 = si, 0 = no): ", 0, 1);
+        if (confirmar == 1) {
+            for (i = pos; i < n - 1; i++) {
+                codigo[i] = codigo[i + 1];
+                nombre[i] = nombre[i + 1];
+                categoria[i] = categoria[i + 1];
+                precio[i] = precio[i + 1];
+                stock[i] = stock[i + 1];
+                promo[i] = promo[i + 1];
+                for (j = 0; j < SEMANAS; j++) {
+                    ventas[i][j] = ventas[i + 1][j];
+                }
+            }
+            n--;
+            cout << "Producto eliminado." << endl;
+        } else {
+            cout << "Eliminacion cancelada." << endl;
+        }
+    }
 }
 
-// Registra una venta e imprime la factura.
+// Registra una venta: descuenta el stock, suma la venta en la semana
+// e imprime la factura con descuento (si hay promocion) e IVA.
+// Recibe: codigos, nombres, precios, stock, promo, matriz de ventas y n.
+// No retorna nada (void).
 void venderProducto(int codigo[], string nombre[], double precio[], int stock[],
                     bool promo[], int ventas[][SEMANAS], int n) {
-    // PENDIENTE
+    int codigoBuscado;
+    int pos;
+    int cantidad;
+    int semana;
+    double subtotal;
+    double descuento;
+    double iva;
+    double total;
+
+    codigoBuscado = leerEntero("Codigo a vender: ", 1, 99999);
+    pos = buscarProducto(codigo, n, codigoBuscado);
+    if (pos == -1) {
+        cout << "No existe un producto con ese codigo." << endl;
+    } else {
+        if (stock[pos] == 0) {
+            cout << "Producto agotado." << endl;
+        } else {
+            cantidad = leerEntero("Cantidad: ", 1, stock[pos]);
+            semana = leerEntero("Semana (1 a " + to_string(SEMANAS) + "): ", 1, SEMANAS);
+
+            subtotal = precio[pos] * cantidad;
+            descuento = promo[pos] ? subtotal * DESCUENTO : 0;
+            iva = (subtotal - descuento) * IVA;
+            total = subtotal - descuento + iva;
+
+            stock[pos] = stock[pos] - cantidad;
+            ventas[pos][semana - 1] = ventas[pos][semana - 1] + cantidad;
+
+            cout << endl << "===== FACTURA =====" << endl;
+            cout << fixed << setprecision(2);
+            cout << left << setw(12) << "Producto:" << nombre[pos] << endl;
+            cout << left << setw(12) << "Cantidad:" << cantidad << endl;
+            cout << left << setw(12) << "Subtotal:" << right << setw(14) << subtotal << endl;
+            cout << left << setw(12) << "Descuento:" << right << setw(14) << descuento << endl;
+            cout << left << setw(12) << "IVA 19%:" << right << setw(14) << iva << endl;
+            cout << left << setw(12) << "TOTAL:" << right << setw(14) << total << endl;
+
+            guardarHistorial("Venta: " + to_string(cantidad) + " x " + nombre[pos]);
+        }
+    }
 }
 
 // =====================================================================

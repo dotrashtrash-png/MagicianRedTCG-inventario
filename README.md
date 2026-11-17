@@ -4,7 +4,7 @@ Sistema de inventario y ventas en C++ para **MagicianRed TCG S.A.S.**, una comer
 
 Proyecto final de Fundamentos de Programación, Universidad de San Buenaventura Cali, 2026-2.
 
-**Equipo:** Miguel Ángel Cano · Cadavid · Miller
+**Equipo:** Miguel Ángel Cano · Juan Sebastián Cadavid · Juan Guillermo Miller Domínguez
 
 ## Qué hace
 
