@@ -1,13 +1,8 @@
-# Programas compilados (no se suben: cada uno compila el suyo)
 *.exe
 *.out
 *.o
 magicianred
-
-# Archivo que el programa genera solo al vender
 historial_ventas.txt
-
-# Basura del sistema y del editor
-.DS_Store
 Thumbs.db
+.DS_Store
 .vscode/

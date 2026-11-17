@@ -1,17 +1,6 @@
-// =====================================================================
-// MagicianRed TCG S.A.S. - Sistema de inventario y ventas
-// Proyecto final - Fundamentos de Programacion 2026-2
-// Universidad de San Buenaventura Cali - Prof. Giovanny Hidalgo
+// MagicianRed TCG - Sistema de inventario y ventas
+// Fundamentos de Programacion 2026-2 - Universidad de San Buenaventura Cali
 // Integrantes: Miguel Angel Cano, Juan Sebastian Cadavid, Juan Guillermo Miller Dominguez
-// =====================================================================
-//
-// Organizacion del codigo:
-//   ZONA MILLER  - login, validacion de numeros, archivos y sobre sorpresa
-//   ZONA CADAVID - CRUD de productos y ventas con factura
-//   ZONA MIGUEL  - matriz de ventas y reportes
-//
-// Compilar:  g++ inventario.cpp -o magicianred.exe
-// Ejecutar:  .\magicianred.exe   (Windows)     ./magicianred.exe   (Linux)
 
 #include <iostream>
 #include <fstream>
@@ -21,21 +10,15 @@
 #include <ctime>
 using namespace std;
 
-// Constantes: lo unico global que se permite
-const int MAX = 50;                 // maximo de productos
-const int SEMANAS = 4;              // columnas de la matriz de ventas
-const int STOCK_MIN = 3;            // alerta de stock bajo
+const int MAX = 50;
+const int SEMANAS = 4;
+const int STOCK_MIN = 3;
 const double IVA = 0.19;
-const double DESCUENTO = 0.10;      // productos en promocion
-const double PRECIO_SOBRE = 30000;  // precio del sobre sorpresa
+const double DESCUENTO = 0.10;
+const double PRECIO_SOBRE = 30000;
 const string ARCHIVO = "inventario.txt";
 const string HISTORIAL = "historial_ventas.txt";
 
-// ---------------------------------------------------------------------
-// Prototipos (el "contrato": nadie los cambia sin avisar en el grupo)
-// ---------------------------------------------------------------------
-
-// Miller
 bool iniciarSesion();
 int leerEntero(string mensaje, int minimo, int maximo);
 int cargarInventario(int codigo[], string nombre[], string categoria[], double precio[],
@@ -46,7 +29,6 @@ void guardarHistorial(string detalle);
 void sobreSorpresa(string nombre[], string categoria[], int stock[],
                    int ventas[][SEMANAS], int n);
 
-// Cadavid
 int buscarProducto(int codigo[], int n, int codigoBuscado);
 void registrarProducto(int codigo[], string nombre[], string categoria[], double precio[],
                        int stock[], bool promo[], int ventas[][SEMANAS], int &n);
@@ -61,7 +43,6 @@ void eliminarProducto(int codigo[], string nombre[], string categoria[], double 
 void venderProducto(int codigo[], string nombre[], double precio[], int stock[],
                     bool promo[], int ventas[][SEMANAS], int n);
 
-// Miguel
 void mostrarVentas(int codigo[], string nombre[], int ventas[][SEMANAS], int n);
 int totalVendido(int ventas[][SEMANAS], int fila);
 double calcularIngresos(double precio[], int ventas[][SEMANAS], int n);
@@ -70,9 +51,7 @@ int semanaConMasVentas(int ventas[][SEMANAS], int n);
 void reporteStockBajo(int codigo[], string nombre[], int stock[], int n);
 void graficoVentas(string nombre[], int ventas[][SEMANAS], int n);
 
-// ---------------------------------------------------------------------
-// main (Miller): solo llama funciones
-// ---------------------------------------------------------------------
+// Menu principal: inicia sesion, carga el inventario y atiende cada opcion.
 int main() {
     int codigo[MAX];
     string nombre[MAX];
@@ -203,14 +182,8 @@ int main() {
     return 0;
 }
 
-
-// =====================================================================
-// ===== ZONA MILLER ===================================================
-// =====================================================================
-
-// Pide usuario y contrasena; da maximo 3 intentos.
-// No recibe parametros.
-// Retorna: true si el usuario entro, false si se acabaron los intentos.
+// Pide usuario y contrasena con maximo 3 intentos.
+// Retorna true si los datos son correctos.
 bool iniciarSesion() {
     string usuario;
     string clave;
@@ -237,28 +210,25 @@ bool iniciarSesion() {
     return false;
 }
 
-// Pide un numero entero y repite la pregunta hasta que sea valido.
-// Recibe: el mensaje a mostrar y el rango permitido (minimo y maximo).
-// Retorna: el numero que escribio el usuario, ya validado.
+// Lee un entero entre minimo y maximo; si el dato no sirve lo vuelve a pedir.
+// Recibe el mensaje y el rango. Retorna el numero leido.
 int leerEntero(string mensaje, int minimo, int maximo) {
     int valor;
 
     cout << mensaje;
     cin >> valor;
-    // cin.fail() es verdadero si escribieron letras en vez de un numero
     while (cin.fail() || valor < minimo || valor > maximo) {
-        cin.clear();             // quita el estado de error de cin
-        cin.ignore(1000, '\n');  // descarta lo que quedo escrito
+        cin.clear();
+        cin.ignore(1000, '\n');
         cout << "Error. Ingrese un numero entre " << minimo << " y " << maximo << ": ";
         cin >> valor;
     }
-    cin.ignore(1000, '\n');      // limpia el Enter que quedo pendiente
+    cin.ignore(1000, '\n');
     return valor;
 }
 
-// Lee inventario.txt y llena los arreglos y la matriz de ventas.
-// Recibe: los arreglos de productos y la matriz de ventas (aqui se llenan).
-// Retorna: cuantos productos leyo (0 si el archivo no existe).
+// Carga los productos y sus ventas desde inventario.txt.
+// Recibe los arreglos y la matriz. Retorna cuantos productos leyo.
 int cargarInventario(int codigo[], string nombre[], string categoria[], double precio[],
                      int stock[], bool promo[], int ventas[][SEMANAS]) {
     ifstream archivo(ARCHIVO);
@@ -273,7 +243,7 @@ int cargarInventario(int codigo[], string nombre[], string categoria[], double p
 
     n = 0;
     archivo >> n;
-    if (n > MAX) {      // no se pueden cargar mas productos de los que caben
+    if (n > MAX) {
         n = MAX;
     }
 
@@ -288,9 +258,8 @@ int cargarInventario(int codigo[], string nombre[], string categoria[], double p
     return n;
 }
 
-// Escribe todos los productos y sus ventas en inventario.txt (reemplaza el archivo).
-// Recibe: los arreglos de productos, la matriz de ventas y la cantidad n.
-// No retorna nada (void).
+// Guarda los productos y sus ventas en inventario.txt.
+// Recibe los arreglos, la matriz y n. No retorna nada.
 void guardarInventario(int codigo[], string nombre[], string categoria[], double precio[],
                        int stock[], bool promo[], int ventas[][SEMANAS], int n) {
     ofstream archivo(ARCHIVO);
@@ -303,7 +272,7 @@ void guardarInventario(int codigo[], string nombre[], string categoria[], double
     }
 
     archivo << n << "\n";
-    archivo << fixed << setprecision(0);   // precios enteros, sin notacion 1.25e+06
+    archivo << fixed << setprecision(0);
 
     for (i = 0; i < n; i++) {
         archivo << codigo[i] << " " << nombre[i] << " " << categoria[i] << " "
@@ -314,14 +283,13 @@ void guardarInventario(int codigo[], string nombre[], string categoria[], double
         archivo << "\n";
     }
 
-    archivo.close();    // se cierra una sola vez, despues de escribir todos
+    archivo.close();
 }
 
-// Agrega una linea al final de historial_ventas.txt sin borrar lo anterior.
-// Recibe: el texto que se va a guardar.
-// No retorna nada (void).
+// Agrega una linea al historial de ventas.
+// Recibe el texto a guardar. No retorna nada.
 void guardarHistorial(string detalle) {
-    ofstream archivo(HISTORIAL, ios::app);   // ios::app = agregar al final
+    ofstream archivo(HISTORIAL, ios::app);
 
     if (!archivo.is_open()) {
         cout << "ERROR: no se pudo abrir " << HISTORIAL << "." << endl;
@@ -332,10 +300,8 @@ void guardarHistorial(string detalle) {
     archivo.close();
 }
 
-// Vende un sobre sorpresa: escoge al azar 3 cartas distintas con stock,
-// les descuenta 1 unidad y suma la venta en la semana que diga el usuario.
-// Recibe: nombres, categorias, stock, matriz de ventas y cantidad de productos.
-// No retorna nada (void).
+// Vende un sobre con 3 cartas al azar que tengan stock.
+// Recibe nombre, categoria, stock, ventas y n. No retorna nada.
 void sobreSorpresa(string nombre[], string categoria[], int stock[],
                    int ventas[][SEMANAS], int n) {
     int disponibles;
@@ -351,7 +317,6 @@ void sobreSorpresa(string nombre[], string categoria[], int stock[],
     double totalSobre;
     string resumenCartas;
 
-    // Contar cuantas cartas distintas tienen stock
     disponibles = 0;
     for (i = 0; i < n; i++) {
         if (categoria[i] == "Carta" && stock[i] > 0) {
@@ -367,11 +332,9 @@ void sobreSorpresa(string nombre[], string categoria[], int stock[],
     semana = leerEntero("Ingrese la semana de la venta (1 a " + to_string(SEMANAS) + "): ",
                         1, SEMANAS);
 
-    // Sacar posiciones al azar hasta tener 3 cartas distintas con stock.
-    // El ciclo siempre termina porque arriba se verifico que hay al menos 3.
     encontrados = 0;
     while (encontrados < 3) {
-        idx = rand() % n;               // posicion al azar entre 0 y n-1
+        idx = rand() % n;
         repetido = false;
         for (k = 0; k < encontrados; k++) {
             if (elegidos[k] == idx) {
@@ -411,13 +374,8 @@ void sobreSorpresa(string nombre[], string categoria[], int stock[],
                      resumenCartas + " | Total: $" + to_string((int)totalSobre));
 }
 
-// =====================================================================
-// ===== ZONA CADAVID ==================================================
-// =====================================================================
-
 // Busca un producto por su codigo.
-// Recibe: los codigos, la cantidad n y el codigo que se busca.
-// Retorna: la posicion del producto, o -1 si no existe.
+// Recibe los codigos, n y el codigo buscado. Retorna la posicion o -1 si no esta.
 int buscarProducto(int codigo[], int n, int codigoBuscado) {
     int i;
     int pos;
@@ -431,10 +389,8 @@ int buscarProducto(int codigo[], int n, int codigoBuscado) {
     return pos;
 }
 
-// Agrega un producto nuevo en la posicion n y aumenta n.
-// Antes verifica que haya espacio y que el codigo no exista.
-// Recibe: todos los arreglos, la matriz y n por referencia (&n) porque cambia.
-// No retorna nada (void).
+// Registra un producto nuevo si hay espacio y el codigo no existe.
+// Recibe los arreglos, la matriz y n por referencia. No retorna nada.
 void registrarProducto(int codigo[], string nombre[], string categoria[], double precio[],
                        int stock[], bool promo[], int ventas[][SEMANAS], int &n) {
     int nuevoCodigo;
@@ -502,9 +458,8 @@ void registrarProducto(int codigo[], string nombre[], string categoria[], double
     }
 }
 
-// Muestra todos los productos en una tabla alineada.
-// Recibe: los arreglos de productos y la cantidad n.
-// No retorna nada (void).
+// Muestra el inventario en una tabla.
+// Recibe los arreglos y n. No retorna nada.
 void listarProductos(int codigo[], string nombre[], string categoria[], double precio[],
                      int stock[], bool promo[], int n) {
     int i;
@@ -525,9 +480,8 @@ void listarProductos(int codigo[], string nombre[], string categoria[], double p
     }
 }
 
-// Pide un codigo y muestra todos los datos del producto y sus ventas por semana.
-// Recibe: los arreglos, la matriz de ventas y n.
-// No retorna nada (void).
+// Busca un producto y muestra sus datos y sus ventas por semana.
+// Recibe los arreglos, la matriz y n. No retorna nada.
 void verProducto(int codigo[], string nombre[], string categoria[], double precio[],
                  int stock[], bool promo[], int ventas[][SEMANAS], int n) {
     int codigoBuscado;
@@ -554,9 +508,8 @@ void verProducto(int codigo[], string nombre[], string categoria[], double preci
     }
 }
 
-// Cambia un dato de un producto existente (incluida su fila de ventas).
-// Recibe: los arreglos, la matriz de ventas y n.
-// No retorna nada (void).
+// Cambia un dato de un producto: nombre, precio, stock, promocion o ventas.
+// Recibe los arreglos, la matriz y n. No retorna nada.
 void actualizarProducto(int codigo[], string nombre[], string categoria[], double precio[],
                         int stock[], bool promo[], int ventas[][SEMANAS], int n) {
     int codigoBuscado;
@@ -609,10 +562,8 @@ void actualizarProducto(int codigo[], string nombre[], string categoria[], doubl
     }
 }
 
-// Elimina un producto: corre una posicion a la izquierda todos los que
-// estan despues (en todos los arreglos y en la matriz) y disminuye n.
-// Recibe: los arreglos, la matriz y n por referencia (&n) porque cambia.
-// No retorna nada (void).
+// Elimina un producto y corre los siguientes una posicion (arreglos y matriz).
+// Recibe los arreglos, la matriz y n por referencia. No retorna nada.
 void eliminarProducto(int codigo[], string nombre[], string categoria[], double precio[],
                       int stock[], bool promo[], int ventas[][SEMANAS], int &n) {
     int codigoBuscado;
@@ -648,10 +599,8 @@ void eliminarProducto(int codigo[], string nombre[], string categoria[], double 
     }
 }
 
-// Registra una venta: descuenta el stock, suma la venta en la semana
-// e imprime la factura con descuento (si hay promocion) e IVA.
-// Recibe: codigos, nombres, precios, stock, promo, matriz de ventas y n.
-// No retorna nada (void).
+// Registra una venta y muestra la factura con descuento e IVA.
+// Recibe codigo, nombre, precio, stock, promo, ventas y n. No retorna nada.
 void venderProducto(int codigo[], string nombre[], double precio[], int stock[],
                     bool promo[], int ventas[][SEMANAS], int n) {
     int codigoBuscado;
@@ -696,15 +645,8 @@ void venderProducto(int codigo[], string nombre[], double precio[], int stock[],
     }
 }
 
-// =====================================================================
-// ===== ZONA MIGUEL ===================================================
-// =====================================================================
-
-// Muestra la matriz de ventas: una fila por producto, una columna por
-// semana, el total de cada producto al final de su fila y el total de
-// cada semana en la ultima fila.
-// Recibe: codigos, nombres, matriz de ventas y cantidad de productos.
-// No retorna nada (void).
+// Muestra la matriz de ventas con el total de cada producto y de cada semana.
+// Recibe codigo, nombre, ventas y n. No retorna nada.
 void mostrarVentas(int codigo[], string nombre[], int ventas[][SEMANAS], int n) {
     int i;
     int j;
@@ -716,15 +658,12 @@ void mostrarVentas(int codigo[], string nombre[], int ventas[][SEMANAS], int n) 
     } else {
         cout << endl << "=== VENTAS DEL MES (unidades) ===" << endl;
 
-        // Encabezado: Codigo, Producto, S1, S2, ... y Total
         cout << left << setw(8) << "Codigo" << setw(30) << "Producto";
         for (j = 0; j < SEMANAS; j++) {
             cout << "   S" << j + 1;
         }
         cout << right << setw(8) << "Total" << endl;
 
-        // Una fila por producto: el for de afuera recorre productos (filas)
-        // y el de adentro recorre las semanas (columnas) de ese producto.
         for (i = 0; i < n; i++) {
             cout << left << setw(8) << codigo[i] << setw(30) << nombre[i];
             for (j = 0; j < SEMANAS; j++) {
@@ -733,8 +672,6 @@ void mostrarVentas(int codigo[], string nombre[], int ventas[][SEMANAS], int n) 
             cout << right << setw(8) << totalVendido(ventas, i) << endl;
         }
 
-        // Ultima fila: total de cada semana. Aqui se invierte el orden:
-        // el for de afuera recorre semanas y el de adentro suma los productos.
         totalGeneral = 0;
         cout << left << setw(38) << "Total por semana";
         for (j = 0; j < SEMANAS; j++) {
@@ -749,9 +686,8 @@ void mostrarVentas(int codigo[], string nombre[], int ventas[][SEMANAS], int n) 
     }
 }
 
-// Suma las unidades que vendio un producto en todas las semanas del mes.
-// Recibe: la matriz de ventas y la fila (posicion) del producto.
-// Retorna: el total de unidades vendidas de ese producto (int).
+// Suma lo que vendio un producto en el mes.
+// Recibe la matriz y la fila del producto. Retorna el total de unidades.
 int totalVendido(int ventas[][SEMANAS], int fila) {
     int j;
     int suma;
@@ -763,10 +699,8 @@ int totalVendido(int ventas[][SEMANAS], int fila) {
     return suma;
 }
 
-// Calcula los ingresos del mes a precio de lista:
-// precio de cada producto x unidades que vendio en el mes.
-// Recibe: precios, matriz de ventas y cantidad de productos.
-// Retorna: el total de ingresos en pesos (double).
+// Calcula los ingresos del mes (precio por unidades vendidas).
+// Recibe precios, ventas y n. Retorna el total en pesos.
 double calcularIngresos(double precio[], int ventas[][SEMANAS], int n) {
     int i;
     double total;
@@ -778,9 +712,8 @@ double calcularIngresos(double precio[], int ventas[][SEMANAS], int n) {
     return total;
 }
 
-// Busca el producto que mas unidades vendio en el mes.
-// Recibe: matriz de ventas y cantidad de productos.
-// Retorna: la posicion de ese producto, o -1 si no hay productos.
+// Busca el producto que mas unidades vendio.
+// Recibe ventas y n. Retorna su posicion, o -1 si no hay productos.
 int productoMasVendido(int ventas[][SEMANAS], int n) {
     int i;
     int posMayor;
@@ -788,9 +721,8 @@ int productoMasVendido(int ventas[][SEMANAS], int n) {
     if (n == 0) {
         posMayor = -1;
     } else {
-        posMayor = 0;   // suponemos que el primero es el mayor...
+        posMayor = 0;
         for (i = 0; i < n; i++) {
-            // ...y si encontramos uno que vendio mas, ese pasa a ser el mayor
             if (totalVendido(ventas, i) > totalVendido(ventas, posMayor)) {
                 posMayor = i;
             }
@@ -799,10 +731,8 @@ int productoMasVendido(int ventas[][SEMANAS], int n) {
     return posMayor;
 }
 
-// Busca la semana del mes en la que se vendieron mas unidades en total.
-// Recorre la matriz por columnas: para cada semana suma todos los productos.
-// Recibe: matriz de ventas y cantidad de productos.
-// Retorna: el numero de columna de esa semana (0 = semana 1), o -1 si no hay productos.
+// Busca la semana con mas ventas sumando cada columna de la matriz.
+// Recibe ventas y n. Retorna la columna (0 = semana 1), o -1 si no hay productos.
 int semanaConMasVentas(int ventas[][SEMANAS], int n) {
     int i;
     int j;
@@ -815,9 +745,9 @@ int semanaConMasVentas(int ventas[][SEMANAS], int n) {
     } else {
         mayor = -1;
         semanaMayor = 0;
-        for (j = 0; j < SEMANAS; j++) {          // afuera: cada semana (columna)
+        for (j = 0; j < SEMANAS; j++) {
             sumaSemana = 0;
-            for (i = 0; i < n; i++) {            // adentro: cada producto (fila)
+            for (i = 0; i < n; i++) {
                 sumaSemana = sumaSemana + ventas[i][j];
             }
             if (sumaSemana > mayor) {
@@ -829,9 +759,8 @@ int semanaConMasVentas(int ventas[][SEMANAS], int n) {
     return semanaMayor;
 }
 
-// Muestra los productos que hay que volver a pedir (stock <= STOCK_MIN).
-// Recibe: codigos, nombres, stock y cantidad de productos.
-// No retorna nada (void).
+// Muestra los productos con stock menor o igual a STOCK_MIN.
+// Recibe codigo, nombre, stock y n. No retorna nada.
 void reporteStockBajo(int codigo[], string nombre[], int stock[], int n) {
     int i;
     int contador;
@@ -857,10 +786,8 @@ void reporteStockBajo(int codigo[], string nombre[], int stock[], int n) {
     }
 }
 
-// Dibuja un grafico de barras: una fila de * por producto,
-// un asterisco por cada unidad vendida en el mes.
-// Recibe: nombres, matriz de ventas y cantidad de productos.
-// No retorna nada (void).
+// Dibuja una barra de * por producto segun lo vendido en el mes.
+// Recibe nombre, ventas y n. No retorna nada.
 void graficoVentas(string nombre[], int ventas[][SEMANAS], int n) {
     int i;
     int k;
@@ -873,7 +800,7 @@ void graficoVentas(string nombre[], int ventas[][SEMANAS], int n) {
         for (i = 0; i < n; i++) {
             total = totalVendido(ventas, i);
             cout << left << setw(30) << nombre[i] << "| ";
-            for (k = 0; k < total; k++) {        // tantos * como unidades vendidas
+            for (k = 0; k < total; k++) {
                 cout << "*";
             }
             cout << " " << total << endl;
