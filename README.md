@@ -56,9 +56,33 @@ Fundas_x100                   | ******************************* 31
 
 ## ▶️ Cómo ejecutarlo
 
-No necesitas saber programar ni usar GitHub. Escoge **una** de las dos opciones.
+No necesitas saber programar ni usar GitHub. Escoge **una** de las opciones.
 
-### Opción A · Sin instalar nada (en el navegador) 🌐
+> [!IMPORTANT]
+> **Para entrar al programa** (no es tu usuario de INGInious ni de la universidad):
+>
+> | Usuario | Contraseña |
+> | :-: | :-: |
+> | `admin` | `tcg2026` |
+>
+> Todo en minúsculas.
+
+### Opción A · En INGInious (la plataforma del curso) 🎓
+
+Si eres estudiante de Fundamentos de Programación de la USB Cali, esta es la forma recomendada.
+
+1. Entra a **[inginious.usbcali.edu.co/console](https://inginious.usbcali.edu.co/console)** con tu cuenta de la universidad.
+2. En **Nueva carpeta**, escribe `MagicianRedTCG` y presiona el botón verde de la carpeta. El programa y su archivo de datos **tienen que estar en la misma carpeta**.
+3. **Crear el programa:** en el formulario de abajo escribe el nombre `MagicianRedTCG`, deja el lenguaje en **C++**, escoge la carpeta `MagicianRedTCG` y presiona **+ Crear**.
+4. Aquí en GitHub abre **`inventario.cpp`**, presiona el ícono de **copiar** (arriba a la derecha del código), vuelve a INGInious, pega todo en **Código fuente** y presiona **Guardar**.
+5. **Crear el archivo de datos:** en el mismo formulario escribe el nombre `inventario.txt`, escoge el lenguaje **Texto (.txt)** y la misma carpeta. Presiona **+ Crear**.
+6. Copia el contenido de **`inventario.txt`** de aquí, pégalo en INGInious y presiona **Guardar**.
+7. Vuelve a abrir el archivo **MagicianRedTCG**. Debajo del código debe decir *"Este programa puede abrir: inventario.txt"*.
+8. Activa **Usar terminal interactiva** y presiona **Ejecutar**. El programa corre abajo y puedes escribir como en una consola normal.
+
+> 💡 El programa guarda los cambios en `inventario.txt` cuando termina. Si quieres volver a los datos de fábrica, pega otra vez el contenido de `inventario_original.txt` en ese archivo.
+
+### Opción B · Sin cuenta (en el navegador) 🌐
 
 La más fácil. Funciona en cualquier computador.
 
@@ -69,7 +93,7 @@ La más fácil. Funciona en cualquier computador.
 5. Vuelve a esta página, abre **`inventario.txt`**, cópialo y **pégalo** en ese archivo nuevo.
 6. Presiona el botón verde **Run**. El programa aparece abajo.
 
-### Opción B · En tu computador 💻
+### Opción C · En tu computador 💻
 
 **Paso 1 · Descargar el proyecto**
 
@@ -127,11 +151,7 @@ xcode-select --install
 
 </details>
 
-### 🔑 Para entrar
-
-| Usuario | Contraseña |
-| :-: | :-: |
-| `admin` | `tcg2026` |
+Cuando abra, entra con usuario `admin` y contraseña `tcg2026`.
 
 > 💡 **¿Quieres empezar con los datos de fábrica?** El programa va guardando los cambios en `inventario.txt`. Para volver al inicio, copia el contenido de `inventario_original.txt` dentro de `inventario.txt`.
 
@@ -149,7 +169,7 @@ xcode-select --install
 
 <div align="center">
 
-| Miguel Ángel Cano | Juan Sebastián Cadavid | Juan Guillermo Miller Domínguez |
+| Miguel Ángel Cano Zapata | Juan Sebastián Cadavid | Juan Guillermo Miller Domínguez |
 | :-: | :-: | :-: |
 | Matriz de ventas y reportes | Inventario (CRUD) y facturación | Archivos, inicio de sesión y menú |
 

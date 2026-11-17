@@ -1,6 +1,6 @@
 // MagicianRed TCG - Sistema de inventario y ventas
 // Fundamentos de Programacion 2026-2 - Universidad de San Buenaventura Cali
-// Integrantes: Miguel Angel Cano, Juan Sebastian Cadavid, Juan Guillermo Miller Dominguez
+// Integrantes: Miguel Angel Cano Zapata, Juan Sebastian Cadavid, Juan Guillermo Miller Dominguez
 
 #include <iostream>
 #include <fstream>
